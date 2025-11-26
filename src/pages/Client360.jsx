@@ -49,48 +49,29 @@ export default function Client360() {
   const urlParams = new URLSearchParams(window.location.search);
   const clientId = urlParams.get('id');
 
-  const { data: client } = useQuery({
-    queryKey: ['client', clientId],
+  // Use backend function to get consolidated client data
+  const { data: clientSummary, isLoading: summaryLoading } = useQuery({
+    queryKey: ['clientSummary', clientId],
     queryFn: async () => {
-      const clients = await base44.entities.Client.filter({ id: clientId });
-      return clients[0];
+      const response = await base44.functions.invoke('getClientSummary', { client_id: clientId });
+      return response.data;
     },
     enabled: !!clientId,
   });
 
-  const { data: accounts = [] } = useQuery({
-    queryKey: ['accounts', clientId],
-    queryFn: () => base44.entities.Account.filter({ client_id: clientId }),
-    enabled: !!clientId,
-  });
+  // Extract data from summary
+  const client = clientSummary?.client;
+  const accounts = clientSummary?.accounts || [];
+  const cards = clientSummary?.cards || [];
+  const loans = clientSummary?.loans || [];
+  const activities = clientSummary?.recent_activities || [];
+  const opportunities = clientSummary?.opportunities || [];
+  const summary = clientSummary?.summary || {};
 
+  // Separate queries for transactions and documents (not in summary)
   const { data: transactions = [] } = useQuery({
     queryKey: ['transactions', clientId],
     queryFn: () => base44.entities.Transaction.filter({ client_id: clientId }, '-created_date', 50),
-    enabled: !!clientId,
-  });
-
-  const { data: cards = [] } = useQuery({
-    queryKey: ['cards', clientId],
-    queryFn: () => base44.entities.Card.filter({ client_id: clientId }),
-    enabled: !!clientId,
-  });
-
-  const { data: loans = [] } = useQuery({
-    queryKey: ['loans', clientId],
-    queryFn: () => base44.entities.Loan.filter({ client_id: clientId }),
-    enabled: !!clientId,
-  });
-
-  const { data: activities = [] } = useQuery({
-    queryKey: ['activities', clientId],
-    queryFn: () => base44.entities.Activity.filter({ client_id: clientId }, '-scheduled_at', 20),
-    enabled: !!clientId,
-  });
-
-  const { data: opportunities = [] } = useQuery({
-    queryKey: ['opportunities', clientId],
-    queryFn: () => base44.entities.Opportunity.filter({ client_id: clientId }),
     enabled: !!clientId,
   });
 
@@ -112,15 +93,16 @@ export default function Client360() {
     }).format(value || 0);
   };
 
-  const totalBalance = accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
-  const totalCreditLimit = cards.reduce((sum, c) => sum + (c.credit_limit || 0), 0);
-  const totalCreditUsed = cards.reduce((sum, c) => sum + (c.used_amount || 0), 0);
-  const totalLoans = loans.reduce((sum, l) => sum + (l.outstanding_balance || 0), 0);
+  // Use pre-calculated values from backend when available
+  const totalBalance = summary.total_balance || accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0);
+  const totalCreditLimit = summary.total_credit_limit || cards.reduce((sum, c) => sum + (c.credit_limit || 0), 0);
+  const totalCreditUsed = (summary.total_credit_limit - summary.available_credit) || cards.reduce((sum, c) => sum + (c.used_amount || 0), 0);
+  const totalLoans = summary.total_loans_outstanding || loans.reduce((sum, l) => sum + (l.outstanding_balance || 0), 0);
 
-  if (!client) {
+  if (summaryLoading || !client) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-pulse text-slate-500">Cargando cliente...</div>
+        <div className="animate-pulse text-slate-500">Cargando datos del cliente...</div>
       </div>
     );
   }
