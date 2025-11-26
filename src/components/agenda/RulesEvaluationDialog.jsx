@@ -20,10 +20,12 @@ import {
   Zap,
   Info
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function RulesEvaluationDialog({ open, onOpenChange, activity }) {
   const [evaluating, setEvaluating] = useState(false);
   const [results, setResults] = useState([]);
+  const [traceId, setTraceId] = useState('');
 
   const { data: rules = [] } = useQuery({
     queryKey: ['rules'],
@@ -34,52 +36,33 @@ export default function RulesEvaluationDialog({ open, onOpenChange, activity }) 
     setEvaluating(true);
     setResults([]);
     
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Mock rule evaluation
-    const mockResults = [
-      {
-        rule: 'Priorizar segmento Preferente',
-        applied: activity?.priority === 'high' || Math.random() > 0.5,
-        message: 'Cliente pertenece a segmento preferente. Se recomienda priorizar atención.',
-        type: 'priority',
-      },
-      {
-        rule: 'Validación de documentación',
-        applied: Math.random() > 0.3,
-        message: 'Documentación del cliente verificada y actualizada.',
-        type: 'validation',
-      },
-      {
-        rule: 'Asignación de carga de trabajo',
-        applied: Math.random() > 0.7,
-        message: 'El oficial tiene menos de 10 actividades pendientes. Puede recibir nuevas asignaciones.',
-        type: 'assignment',
-      },
-      {
-        rule: 'Notificación de seguimiento',
-        applied: true,
-        message: 'Se programará recordatorio 24 horas antes de la actividad.',
-        type: 'notification',
-      },
-    ];
-    
-    // Create mock event for rule evaluation
-    await base44.entities.MockEvent.create({
-      event_type: 'system',
-      source: 'rules_engine',
-      payload: JSON.stringify({ 
-        action: 'evaluate', 
+    try {
+      // Call backend function for real rule evaluation
+      const response = await base44.functions.invoke('evaluateRules', {
         activity_id: activity?.id,
-        rules_evaluated: mockResults.length,
-        rules_applied: mockResults.filter(r => r.applied).length,
-      }),
-      trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-    });
-    
-    setResults(mockResults);
-    setEvaluating(false);
+        client_id: activity?.client_id,
+      });
+      
+      const data = response.data;
+      
+      if (data.success) {
+        const formattedResults = data.results.map(r => ({
+          rule: r.rule_name,
+          applied: r.applied,
+          message: r.message,
+          type: r.rule_type,
+        }));
+        setResults(formattedResults);
+        setTraceId(data.trace_id);
+      } else {
+        toast.error('Error al evaluar reglas');
+      }
+    } catch (error) {
+      console.error('Error evaluating rules:', error);
+      toast.error('Error al conectar con motor de reglas');
+    } finally {
+      setEvaluating(false);
+    }
   };
 
   useEffect(() => {
@@ -176,9 +159,9 @@ export default function RulesEvaluationDialog({ open, onOpenChange, activity }) 
                 <div className="p-3 bg-blue-50 rounded-lg flex items-start gap-2">
                   <Info className="h-4 w-4 text-blue-600 mt-0.5" />
                   <div className="text-sm text-blue-700">
-                    <p className="font-medium">Motor de Reglas (Simulado)</p>
+                    <p className="font-medium">Motor de Reglas Backend</p>
                     <p className="text-blue-600 mt-0.5">
-                      Trace: DEMO-{Math.random().toString(36).substr(2, 9).toUpperCase()}
+                      Trace: {traceId}
                     </p>
                   </div>
                 </div>
