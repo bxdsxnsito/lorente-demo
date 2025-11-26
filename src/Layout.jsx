@@ -32,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -219,11 +220,11 @@ export default function Layout({ children, currentPageName }) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.info('Funcionalidad de perfil en desarrollo')}>
                 <Users className="mr-2 h-4 w-4" />
                 Mi Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.info('Funcionalidad de configuración en desarrollo')}>
                 <Settings className="mr-2 h-4 w-4" />
                 Configuración
               </DropdownMenuItem>
