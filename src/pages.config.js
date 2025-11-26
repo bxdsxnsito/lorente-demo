@@ -4,6 +4,9 @@ import Client360 from './pages/Client360';
 import Agenda from './pages/Agenda';
 import Opportunities from './pages/Opportunities';
 import Loans from './pages/Loans';
+import Cards from './pages/Cards';
+import Products from './pages/Products';
+import Supervision from './pages/Supervision';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +17,9 @@ export const PAGES = {
     "Agenda": Agenda,
     "Opportunities": Opportunities,
     "Loans": Loans,
+    "Cards": Cards,
+    "Products": Products,
+    "Supervision": Supervision,
 }
 
 export const pagesConfig = {
