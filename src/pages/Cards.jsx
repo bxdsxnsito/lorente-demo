@@ -98,34 +98,40 @@ export default function Cards() {
   const handleBlockCard = async () => {
     if (!blockDialog.card) return;
     
-    const newStatus = blockDialog.card.status === 'blocked' ? 'active' : 'blocked';
+    const action = blockDialog.card.status === 'blocked' ? 'unblock' : 'block';
     
-    await updateMutation.mutateAsync({
-      id: blockDialog.card.id,
-      data: { status: newStatus }
-    });
+    try {
+      // Call backend function for card management
+      const response = await base44.functions.invoke('manageCard', {
+        card_id: blockDialog.card.id,
+        action: action,
+      });
+      
+      const data = response.data;
+      
+      if (data.success) {
+        queryClient.invalidateQueries(['cards']);
+        toast.success(data.message);
+      } else if (data.requires_otp) {
+        // For demo, auto-complete with the OTP
+        const otpResponse = await base44.functions.invoke('manageCard', {
+          card_id: blockDialog.card.id,
+          action: action,
+          otp_code: data.demo_otp,
+        });
+        
+        if (otpResponse.data.success) {
+          queryClient.invalidateQueries(['cards']);
+          toast.success(otpResponse.data.message);
+        }
+      } else {
+        toast.error(data.error || 'Error al procesar');
+      }
+    } catch (error) {
+      console.error('Error managing card:', error);
+      toast.error('Error al gestionar tarjeta');
+    }
     
-    // Create audit log
-    await base44.entities.Audit.create({
-      action: newStatus === 'blocked' ? 'update' : 'update',
-      entity_type: 'Card',
-      entity_id: blockDialog.card.id,
-      description: `Tarjeta ${newStatus === 'blocked' ? 'bloqueada' : 'desbloqueada'}: ${blockDialog.card.card_number_masked}`,
-      trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-    });
-    
-    // Create mock event
-    await base44.entities.MockEvent.create({
-      event_type: 'card',
-      source: 'card_management',
-      payload: JSON.stringify({ 
-        action: newStatus === 'blocked' ? 'block' : 'unblock',
-        card_id: blockDialog.card.id 
-      }),
-      trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-    });
-    
-    toast.success(newStatus === 'blocked' ? 'Tarjeta bloqueada' : 'Tarjeta desbloqueada');
     setBlockDialog({ open: false, card: null });
   };
 
