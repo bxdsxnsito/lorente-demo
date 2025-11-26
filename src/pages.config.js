@@ -7,6 +7,8 @@ import Loans from './pages/Loans';
 import Cards from './pages/Cards';
 import Products from './pages/Products';
 import Supervision from './pages/Supervision';
+import Admin from './pages/Admin';
+import DeveloperControls from './pages/DeveloperControls';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +22,8 @@ export const PAGES = {
     "Cards": Cards,
     "Products": Products,
     "Supervision": Supervision,
+    "Admin": Admin,
+    "DeveloperControls": DeveloperControls,
 }
 
 export const pagesConfig = {
