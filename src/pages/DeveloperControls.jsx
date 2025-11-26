@@ -82,47 +82,23 @@ export default function DeveloperControls() {
     setGenerating(true);
     
     try {
-      const account = accounts.find(a => a.id === selectedAccount);
-      const transactions = [];
-      let balance = account.balance || 10000;
-      
+      // Generate transactions using backend function
       for (let i = 0; i < transactionCount; i++) {
         const isDebit = Math.random() > 0.5;
         const amount = Math.floor(Math.random() * 1000) + 100;
         
-        balance = isDebit ? balance - amount : balance + amount;
-        
-        transactions.push({
+        await base44.functions.invoke('processTransaction', {
           account_id: selectedAccount,
-          client_id: account.client_id,
           type: isDebit ? 'withdrawal' : 'deposit',
           amount: amount,
-          currency: account.currency || 'USD',
-          reference: `TRX-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
           description: isDebit ? 'Retiro simulado' : 'Depósito simulado',
-          balance_after: Math.max(0, balance),
-          status: 'completed',
-          channel: 'api',
         });
       }
-      
-      await base44.entities.Transaction.bulkCreate(transactions);
-      
-      // Update account balance
-      await base44.entities.Account.update(selectedAccount, { balance: Math.max(0, balance) });
-      
-      // Create event
-      await base44.entities.MockEvent.create({
-        event_type: 'transaction',
-        source: 'developer_controls',
-        payload: JSON.stringify({ action: 'bulk_generate', count: transactionCount }),
-        trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      });
       
       queryClient.invalidateQueries(['transactions']);
       queryClient.invalidateQueries(['accounts']);
       refetchEvents();
-      toast.success(`${transactionCount} transacciones generadas`);
+      toast.success(`${transactionCount} transacciones procesadas via backend`);
     } catch (error) {
       console.error('Error generating transactions:', error);
       toast.error('Error al generar transacciones');
@@ -167,17 +143,20 @@ export default function DeveloperControls() {
     }
     
     try {
+      // Get loan details for client_id
+      const loan = loans.find(l => l.id === selectedLoan);
+      
+      // Use backend pre-approval function
+      const response = await base44.functions.invoke('evaluateLoanPreApproval', {
+        client_id: loan?.client_id,
+        product_code: loan?.product_code || 'personal',
+        principal: loan?.principal || 0,
+      });
+      
+      // Force approval regardless of evaluation
       await base44.entities.Loan.update(selectedLoan, { 
         status: 'approved',
         probability: 100 
-      });
-      
-      // Create event
-      await base44.entities.MockEvent.create({
-        event_type: 'loan',
-        source: 'developer_controls',
-        payload: JSON.stringify({ action: 'force_approval', loan_id: selectedLoan }),
-        trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
       });
       
       // Create audit
@@ -185,14 +164,14 @@ export default function DeveloperControls() {
         action: 'approve',
         entity_type: 'Loan',
         entity_id: selectedLoan,
-        description: 'Aprobación forzada desde controles de desarrollo',
-        trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        description: `Aprobación forzada. Evaluación: ${response.data?.message || 'N/A'}`,
+        trace_id: response.data?.trace_id || `DEMO-${Date.now().toString(36).toUpperCase()}`,
       });
       
       queryClient.invalidateQueries(['loans']);
       refetchEvents();
       refetchAudits();
-      toast.success('Préstamo aprobado');
+      toast.success('Préstamo aprobado via backend');
     } catch (error) {
       console.error('Error approving loan:', error);
       toast.error('Error al aprobar préstamo');
