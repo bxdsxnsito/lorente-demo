@@ -101,40 +101,27 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
     setLoading(true);
     
     try {
-      const updateData = {
-        status: 'completed',
+      // Call backend function for check-in processing
+      const response = await base44.functions.invoke('processCheckin', {
+        activity_id: activity.id,
         result: result,
         notes: notes,
-        checkin_at: new Date().toISOString(),
-      };
+        location: location,
+        document_url: file?.url,
+      });
       
-      if (location) {
-        updateData.checkin_lat = location.lat;
-        updateData.checkin_lng = location.lng;
+      const data = response.data;
+      
+      if (data.success) {
+        toast.success(`Check-in realizado. ${data.location_message || ''}`);
+        if (data.rules_evaluated > 0) {
+          toast.info(`${data.rules_evaluated} reglas evaluadas`);
+        }
+        onSuccess();
+        onOpenChange(false);
+      } else {
+        toast.error(data.error || 'Error al procesar check-in');
       }
-      
-      await base44.entities.Activity.update(activity.id, updateData);
-      
-      // Create audit log
-      await base44.entities.Audit.create({
-        action: 'checkin',
-        entity_type: 'Activity',
-        entity_id: activity.id,
-        description: `Check-in realizado para actividad: ${activity.title || activity.activity_type}`,
-        trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      });
-      
-      // Create mock event
-      await base44.entities.MockEvent.create({
-        event_type: 'activity',
-        source: 'checkin',
-        payload: JSON.stringify({ action: 'checkin', activity_id: activity.id, location }),
-        trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      });
-      
-      toast.success('Check-in realizado correctamente');
-      onSuccess();
-      onOpenChange(false);
     } catch (error) {
       console.error('Error completing activity:', error);
       toast.error('Error al completar actividad');
