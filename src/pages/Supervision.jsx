@@ -116,26 +116,31 @@ export default function Supervision() {
   const handleReassign = async () => {
     if (!reassignDialog.activity || !newOfficialId) return;
     
-    const newOfficial = users.find(u => u.id === newOfficialId);
-    
-    await updateMutation.mutateAsync({
-      id: reassignDialog.activity.id,
-      data: { 
-        official_id: newOfficialId,
-        official_name: newOfficial?.full_name || 'Oficial'
+    try {
+      // Call backend function for activity assignment
+      const response = await base44.functions.invoke('assignActivity', {
+        activity_id: reassignDialog.activity.id,
+        new_official_id: newOfficialId,
+        reason: 'Reasignación manual por supervisor',
+      });
+      
+      const data = response.data;
+      
+      if (data.success) {
+        queryClient.invalidateQueries(['activities']);
+        toast.success(`Actividad reasignada a ${data.new_official.name}`);
+        
+        if (data.workload_warning) {
+          toast.warning(`Advertencia: ${data.new_official.name} tiene ${data.new_official.pending_activities} actividades pendientes`);
+        }
+      } else {
+        toast.error(data.error || 'Error al reasignar');
       }
-    });
+    } catch (error) {
+      console.error('Error reassigning activity:', error);
+      toast.error('Error al reasignar actividad');
+    }
     
-    // Create audit log
-    await base44.entities.Audit.create({
-      action: 'update',
-      entity_type: 'Activity',
-      entity_id: reassignDialog.activity.id,
-      description: `Actividad reasignada a ${newOfficial?.full_name}`,
-      trace_id: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-    });
-    
-    toast.success('Actividad reasignada correctamente');
     setReassignDialog({ open: false, activity: null });
     setNewOfficialId('');
   };
