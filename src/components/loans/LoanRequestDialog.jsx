@@ -53,23 +53,40 @@ export default function LoanRequestDialog({ open, onOpenChange, clients, onSucce
     setEvaluating(true);
     setPreApprovalResult(null);
     
-    // Simulate evaluation delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const client = clients.find(c => c.id === formData.client_id);
-    const isApproved = (client?.risk_score || 0) >= 600;
-    
-    setPreApprovalResult({
-      approved: isApproved,
-      riskScore: client?.risk_score || 0,
-      maxAmount: isApproved ? 50000 : 0,
-      message: isApproved 
-        ? 'Cliente califica para pre-aprobación' 
-        : 'Cliente no califica en este momento',
-      traceId: `DEMO-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-    });
-    
-    setEvaluating(false);
+    try {
+      // Call backend function for real pre-approval evaluation
+      const response = await base44.functions.invoke('evaluateLoanPreApproval', {
+        client_id: formData.client_id,
+        product_code: formData.product_code,
+        principal: parseFloat(formData.principal) || 0,
+      });
+      
+      const data = response.data;
+      
+      if (data.success) {
+        setPreApprovalResult({
+          approved: data.approved,
+          riskScore: data.risk_score,
+          maxAmount: data.max_amount,
+          probability: data.probability,
+          suggestedRate: data.suggested_rate,
+          message: data.message,
+          traceId: data.trace_id,
+        });
+        
+        // Update form with suggested rate
+        if (data.suggested_rate) {
+          setFormData(prev => ({ ...prev, interest_rate: data.suggested_rate }));
+        }
+      } else {
+        toast.error('Error en la evaluación');
+      }
+    } catch (error) {
+      console.error('Error evaluating pre-approval:', error);
+      toast.error('Error al conectar con motor de pre-aprobación');
+    } finally {
+      setEvaluating(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -169,12 +186,17 @@ export default function LoanRequestDialog({ open, onOpenChange, clients, onSucce
                     <span className="font-medium">{preApprovalResult.message}</span>
                   </div>
                   <p className="text-sm text-slate-500">
-                    Score de riesgo: {preApprovalResult.riskScore}
+                    Score de riesgo: {preApprovalResult.riskScore} | Probabilidad: {preApprovalResult.probability}%
                   </p>
                   {preApprovalResult.approved && (
-                    <p className="text-sm text-green-600">
-                      Monto máximo pre-aprobado: ${preApprovalResult.maxAmount.toLocaleString()}
-                    </p>
+                    <>
+                      <p className="text-sm text-green-600">
+                        Monto máximo pre-aprobado: ${preApprovalResult.maxAmount?.toLocaleString()}
+                      </p>
+                      <p className="text-sm text-blue-600">
+                        Tasa sugerida: {preApprovalResult.suggestedRate}% TEA
+                      </p>
+                    </>
                   )}
                   <p className="text-xs text-slate-400">
                     Trace: {preApprovalResult.traceId}
