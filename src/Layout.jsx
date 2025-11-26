@@ -218,7 +218,7 @@ export default function Layout({ children, currentPageName }) {
                 )}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 z-50">
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem>
                 <Users className="mr-2 h-4 w-4" />
                 Mi Perfil
