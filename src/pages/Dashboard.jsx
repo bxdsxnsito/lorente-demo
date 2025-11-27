@@ -79,9 +79,9 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Client.list('-created_date', 100),
   });
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+  const { data: appUsers = [] } = useQuery({
+    queryKey: ['appUsers'],
+    queryFn: () => base44.entities.AppUser.list(),
   });
 
   // Calculate KPIs

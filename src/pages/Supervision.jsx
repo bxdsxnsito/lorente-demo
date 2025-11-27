@@ -65,9 +65,9 @@ export default function Supervision() {
   const [newOfficialId, setNewOfficialId] = useState('');
   const queryClient = useQueryClient();
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+  const { data: appUsers = [] } = useQuery({
+    queryKey: ['appUsers'],
+    queryFn: () => base44.entities.AppUser.list(),
   });
 
   const { data: activities = [], refetch } = useQuery({
@@ -87,7 +87,8 @@ export default function Supervision() {
     },
   });
 
-  const officials = users.filter(u => u.position === 'oficial');
+  // Solo cuentan los que tengan user_id (estén vinculados) y sean oficiales
+  const officials = appUsers.filter(u => u.position === 'oficial' && u.user_id && u.status === 'active');
 
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = 

@@ -43,7 +43,16 @@ export default function Layout({ children, currentPageName }) {
     const loadUser = async () => {
       try {
         const currentUser = await base44.auth.me();
-        setUser(currentUser);
+        // Intentar buscar el AppUser vinculado
+        const appUsers = await base44.entities.AppUser.list();
+        const linkedAppUser = appUsers.find(au => au.user_id === currentUser.id || au.email === currentUser.email);
+
+        // Si existe AppUser vinculado, usar sus datos prioritariamente
+        if (linkedAppUser) {
+           setUser({ ...currentUser, ...linkedAppUser });
+        } else {
+           setUser(currentUser);
+        }
       } catch (e) {
         console.log('User not logged in');
       }

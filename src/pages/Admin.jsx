@@ -58,9 +58,22 @@ export default function Admin() {
   const [selectedRule, setSelectedRule] = useState(null);
   const queryClient = useQueryClient();
 
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
+  const { data: appUsers = [], refetch: refetchAppUsers } = useQuery({
+    queryKey: ['appUsers'],
+    queryFn: () => base44.entities.AppUser.list(),
+  });
+
+  const { data: baseUsers = [] } = useQuery({
+    queryKey: ['baseUsers'],
     queryFn: () => base44.entities.User.list(),
+  });
+
+  const linkUserMutation = useMutation({
+    mutationFn: ({ appUserId, baseUserId }) => base44.entities.AppUser.update(appUserId, { user_id: baseUserId }),
+    onSuccess: () => {
+      refetchAppUsers();
+      toast.success('Usuario vinculado correctamente');
+    },
   });
 
   const { data: rules = [], refetch: refetchRules } = useQuery({
@@ -126,7 +139,11 @@ export default function Admin() {
         <TabsList className="bg-white border p-1">
           <TabsTrigger value="users" className="gap-2">
             <Users className="h-4 w-4" />
-            Usuarios
+            Personal (AppUsers)
+          </TabsTrigger>
+          <TabsTrigger value="linking" className="gap-2">
+            <CheckCircle className="h-4 w-4" />
+            Homologación
           </TabsTrigger>
           <TabsTrigger value="rules" className="gap-2">
             <Zap className="h-4 w-4" />
@@ -134,46 +151,66 @@ export default function Admin() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Users Tab */}
+        {/* AppUsers Tab */}
         <TabsContent value="users">
           <Card className="bg-white border-0 shadow-sm">
             <CardHeader>
-              <CardTitle>Usuarios del Sistema</CardTitle>
+              <CardTitle>Personal del Banco (AppUsers)</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-50 hover:bg-slate-50">
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Rol</TableHead>
-                    <TableHead>Posición</TableHead>
+                    <TableHead>Colaborador</TableHead>
+                    <TableHead>Contacto</TableHead>
+                    <TableHead>Rol / Cargo</TableHead>
+                    <TableHead>Ubicación</TableHead>
+                    <TableHead>Vinculación</TableHead>
                     <TableHead>Estado</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
+                  {appUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
+                            <AvatarImage src={user.avatar_url} />
                             <AvatarFallback className="bg-blue-100 text-blue-600">
                               {user.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="font-medium">{user.full_name}</span>
+                          <div>
+                            <p className="font-medium">{user.full_name}</p>
+                            <p className="text-xs text-slate-500">{user.email}</p>
+                          </div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-slate-500">{user.email}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={user.role === 'admin' ? 'border-red-200 text-red-700' : ''}>
-                          {user.role}
-                        </Badge>
+                        <div className="text-sm">
+                          <p>{user.phone || '-'}</p>
+                        </div>
                       </TableCell>
                       <TableCell>
-                        <Badge className={`${getPositionColor(user.position)} border-0`}>
-                          {getPositionLabel(user.position)}
-                        </Badge>
+                        <div className="flex flex-col gap-1">
+                          <Badge variant="outline" className="w-fit">
+                            {user.role}
+                          </Badge>
+                          <span className="text-xs text-slate-500">{getPositionLabel(user.position)}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <p>{user.branch || '-'}</p>
+                          <p className="text-xs text-slate-500">{user.department}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                         {user.user_id ? (
+                            <Badge className="bg-green-100 text-green-700 border-green-200">Vinculado</Badge>
+                         ) : (
+                            <Badge variant="outline" className="text-amber-600 border-amber-200">Pendiente</Badge>
+                         )}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={
@@ -190,6 +227,92 @@ export default function Admin() {
               </Table>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Linking Tab */}
+        <TabsContent value="linking">
+           <Card className="bg-white border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle>Homologación de Identidades</CardTitle>
+              <p className="text-sm text-slate-500">Vincular usuarios del sistema (Auth) con perfiles de negocio (AppUser)</p>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50">
+                    <TableHead>Perfil de Negocio (AppUser)</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Usuario de Sistema (Auth)</TableHead>
+                    <TableHead>Acción</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {appUsers.map((appUser) => {
+                    const linkedBaseUser = baseUsers.find(bu => bu.id === appUser.user_id);
+                    return (
+                      <TableRow key={appUser.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                             <Avatar className="h-8 w-8">
+                                <AvatarImage src={appUser.avatar_url} />
+                                <AvatarFallback>{appUser.full_name?.[0]}</AvatarFallback>
+                             </Avatar>
+                             <div>
+                               <p className="font-medium">{appUser.full_name}</p>
+                               <p className="text-xs text-slate-500">{appUser.email}</p>
+                             </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {appUser.user_id ? (
+                             <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Vinculado</Badge>
+                          ) : (
+                             <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">No vinculado</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {linkedBaseUser ? (
+                            <div className="flex items-center gap-2">
+                               <div className="h-2 w-2 rounded-full bg-green-500" />
+                               <span className="text-sm">{linkedBaseUser.email}</span>
+                               <span className="text-xs text-slate-400">({linkedBaseUser.role})</span>
+                            </div>
+                          ) : (
+                            <Select onValueChange={(val) => linkUserMutation.mutate({ appUserId: appUser.id, baseUserId: val })}>
+                              <SelectTrigger className="w-[250px] h-8">
+                                <SelectValue placeholder="Seleccionar usuario auth..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {baseUsers
+                                  .filter(bu => !appUsers.find(au => au.user_id === bu.id)) // Filter out already linked users
+                                  .map(bu => (
+                                    <SelectItem key={bu.id} value={bu.id}>
+                                      {bu.email} ({bu.full_name})
+                                    </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {appUser.user_id && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => linkUserMutation.mutate({ appUserId: appUser.id, baseUserId: null })}
+                            >
+                              Desvincular
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+           </Card>
         </TabsContent>
 
         {/* Rules Tab */}
