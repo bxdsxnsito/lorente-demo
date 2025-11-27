@@ -39,7 +39,15 @@ export default function ActivityFormDialog({ open, onOpenChange, activity, clien
     const loadUser = async () => {
       try {
         const currentUser = await base44.auth.me();
-        setUser(currentUser);
+        // Find linked AppUser
+        const appUsers = await base44.entities.AppUser.list();
+        const linkedAppUser = appUsers.find(au => au.user_id === currentUser.id);
+        
+        if (linkedAppUser) {
+          setUser({ ...currentUser, appUser: linkedAppUser });
+        } else {
+          setUser(currentUser);
+        }
       } catch (e) {
         console.log('User not logged in');
       }
@@ -91,8 +99,9 @@ export default function ActivityFormDialog({ open, onOpenChange, activity, clien
     try {
       const data = {
         ...formData,
-        official_id: user?.id,
-        official_name: user?.full_name,
+        // Use AppUser ID if available, otherwise fallback to system ID (though AppUser is preferred)
+        official_id: user?.appUser?.id || user?.id,
+        official_name: user?.appUser?.full_name || user?.full_name,
         status: 'pending',
       };
       

@@ -65,7 +65,15 @@ export default function Agenda() {
     const loadUser = async () => {
       try {
         const currentUser = await base44.auth.me();
-        setUser(currentUser);
+        // Find linked AppUser for consistent context
+        const appUsers = await base44.entities.AppUser.list();
+        const linkedAppUser = appUsers.find(au => au.user_id === currentUser.id);
+        
+        if (linkedAppUser) {
+          setUser({ ...currentUser, appUser: linkedAppUser });
+        } else {
+          setUser(currentUser);
+        }
       } catch (e) {
         console.log('User not logged in');
       }

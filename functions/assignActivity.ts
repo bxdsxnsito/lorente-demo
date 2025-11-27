@@ -25,9 +25,9 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Activity not found' }, { status: 404 });
         }
 
-        // Get new official
-        const users = await base44.entities.User.list();
-        const newOfficial = users.find(u => u.id === new_official_id);
+        // Get new official (AppUser)
+        const appUsers = await base44.entities.AppUser.list();
+        const newOfficial = appUsers.find(u => u.id === new_official_id);
         
         if (!newOfficial) {
             return Response.json({ error: 'Official not found' }, { status: 404 });
