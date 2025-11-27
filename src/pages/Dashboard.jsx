@@ -92,19 +92,19 @@ export default function Dashboard() {
     return sum;
   }, 0);
 
-  const activeTeams = new Set(users.filter(u => u.position === 'oficial').map(u => u.department)).size || 2;
+  const activeTeams = new Set(appUsers.filter(u => u.position === 'oficial' && u.user_id).map(u => u.department)).size || 2;
   
   const completedActivities = activities.filter(a => a.status === 'completed').length;
   const totalActivities = activities.length;
   
-  const bestTeamSales = Math.max(...users.map(u => {
+  const bestTeamSales = Math.max(...appUsers.filter(u => u.user_id).map(u => {
     const userTransactions = transactions.filter(t => t.created_by === u.email);
     return userTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
   }), 0);
 
   // Chart data - Team performance based on real data
   const teamPerformanceData = React.useMemo(() => {
-    const officials = users.filter(u => u.position === 'oficial');
+    const officials = appUsers.filter(u => u.position === 'oficial' && u.user_id);
     if (officials.length === 0) {
       return [
         { name: 'Equipo 1', presupuesto: 6000000, ejecucion: 4500000 },
@@ -120,7 +120,7 @@ export default function Dashboard() {
         ejecucion: ejecucion || Math.random() * 4000000 + 1000000,
       };
     });
-  }, [users, transactions]);
+  }, [appUsers, transactions]);
 
   // Activities chart data based on real activities
   const activitiesChartData = React.useMemo(() => {
@@ -184,7 +184,7 @@ export default function Dashboard() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos los vendedores</SelectItem>
-              {users.filter(u => u.position === 'oficial').map(u => (
+              {appUsers.filter(u => u.position === 'oficial' && u.user_id).map(u => (
                 <SelectItem key={u.id} value={u.id}>{u.full_name}</SelectItem>
               ))}
             </SelectContent>
