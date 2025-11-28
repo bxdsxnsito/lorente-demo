@@ -229,13 +229,17 @@ export default function Layout({ children, currentPageName }) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => toast.info('Funcionalidad de perfil en desarrollo')}>
-                <Users className="mr-2 h-4 w-4" />
-                Mi Perfil
+              <DropdownMenuItem asChild>
+                <Link to={createPageUrl('Profile')} className="cursor-pointer w-full flex items-center">
+                  <Users className="mr-2 h-4 w-4" />
+                  Mi Perfil
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info('Funcionalidad de configuración en desarrollo')}>
-                <Settings className="mr-2 h-4 w-4" />
-                Configuración
+              <DropdownMenuItem asChild>
+                <Link to={createPageUrl('Settings')} className="cursor-pointer w-full flex items-center">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Configuración
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">

@@ -9,6 +9,8 @@ import Products from './pages/Products';
 import Supervision from './pages/Supervision';
 import Admin from './pages/Admin';
 import DeveloperControls from './pages/DeveloperControls';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +26,8 @@ export const PAGES = {
     "Supervision": Supervision,
     "Admin": Admin,
     "DeveloperControls": DeveloperControls,
+    "Profile": Profile,
+    "Settings": Settings,
 }
 
 export const pagesConfig = {
