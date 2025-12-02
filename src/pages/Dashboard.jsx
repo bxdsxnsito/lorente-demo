@@ -85,6 +85,21 @@ export default function Dashboard() {
     queryFn: () => base44.entities.AppUser.list(),
   });
 
+  const { data: cards = [] } = useQuery({
+    queryKey: ['cards'],
+    queryFn: () => base44.entities.Card.list('-created_date', 100),
+  });
+
+  const { data: loans = [] } = useQuery({
+    queryKey: ['loans'],
+    queryFn: () => base44.entities.Loan.list('-created_date', 100),
+  });
+
+  const { data: accounts = [] } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: () => base44.entities.Account.list('-created_date', 100),
+  });
+
   // Calculate KPIs
   const totalSales = transactions.reduce((sum, t) => {
     if (t.type === 'deposit' || t.type === 'transfer_in') {
@@ -231,7 +246,13 @@ export default function Dashboard() {
 
       {/* Sales Trend Chart */}
       <div className="grid grid-cols-1">
-        <SalesVsBudgetChart transactions={transactions} />
+        <SalesVsBudgetChart 
+          transactions={transactions}
+          cards={cards}
+          loans={loans}
+          opportunities={opportunities}
+          accounts={accounts}
+        />
       </div>
 
       {/* Charts Row */}

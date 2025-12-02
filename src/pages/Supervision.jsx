@@ -81,6 +81,26 @@ export default function Supervision() {
     queryFn: () => base44.entities.Opportunity.list(),
   });
 
+  const { data: transactions = [] } = useQuery({
+    queryKey: ['transactions'],
+    queryFn: () => base44.entities.Transaction.list('-created_date', 200),
+  });
+
+  const { data: cards = [] } = useQuery({
+    queryKey: ['cards'],
+    queryFn: () => base44.entities.Card.list('-created_date', 100),
+  });
+
+  const { data: loans = [] } = useQuery({
+    queryKey: ['loans'],
+    queryFn: () => base44.entities.Loan.list('-created_date', 100),
+  });
+
+  const { data: accounts = [] } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: () => base44.entities.Account.list('-created_date', 100),
+  });
+
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Activity.update(id, data),
     onSuccess: () => {
@@ -230,7 +250,13 @@ export default function Supervision() {
       </div>
 
       <div className="grid grid-cols-1">
-        <SalesVsBudgetChart />
+        <SalesVsBudgetChart 
+          transactions={transactions}
+          cards={cards}
+          loans={loans}
+          opportunities={opportunities}
+          accounts={accounts}
+        />
       </div>
 
       {/* Team Performance Chart */}

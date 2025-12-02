@@ -13,10 +13,15 @@ import { TrendingUp } from 'lucide-react';
 import ChartCard from '@/components/dashboard/ChartCard';
 import moment from 'moment';
 
-export default function SalesVsBudgetChart({ transactions = [] }) {
+export default function SalesVsBudgetChart({ 
+  transactions = [], 
+  cards = [], 
+  loans = [], 
+  opportunities = [], 
+  accounts = [] 
+}) {
   const data = useMemo(() => {
     const days = [];
-    const today = moment();
     
     // Generate last 30 days
     for (let i = 29; i >= 0; i--) {
@@ -24,10 +29,8 @@ export default function SalesVsBudgetChart({ transactions = [] }) {
       const dateStr = date.format('YYYY-MM-DD');
       const displayDate = date.format('DD/MM');
       
-      // Calculate actual sales from transactions (deposits/transfers)
-      // In a real scenario, we would sum up various entities (loans, cards, etc.)
-      // Here we use transactions as a proxy for "Ventas"
-      const dailySales = transactions
+      // 1. Ejecuciones (Transacciones)
+      const dailyTransactions = transactions
         .filter(t => moment(t.created_date).format('YYYY-MM-DD') === dateStr)
         .reduce((sum, t) => {
              if (t.type === 'deposit' || t.type === 'transfer_in') {
@@ -36,15 +39,46 @@ export default function SalesVsBudgetChart({ transactions = [] }) {
              return sum;
         }, 0);
 
-      // Mock Budget - Target is roughly 10% higher than average sales or a fixed amount
-      // We'll make it look dynamic but consistent
-      const baseBudget = 500000; // Daily target example
-      const randomVariation = Math.random() * 100000 - 50000;
+      // 2. Tarjetas (Límite de crédito otorgado)
+      const dailyCards = cards
+        .filter(c => moment(c.created_date).format('YYYY-MM-DD') === dateStr)
+        .reduce((sum, c) => sum + (c.credit_limit || 0), 0);
+
+      // 3. Créditos (Monto principal desembolsado)
+      const dailyLoans = loans
+        .filter(l => {
+          const loanDate = l.disbursement_date || l.created_date;
+          return moment(loanDate).format('YYYY-MM-DD') === dateStr;
+        })
+        .reduce((sum, l) => sum + (l.principal || 0), 0);
+
+      // 4. Cuentas (Saldo inicial / Captación)
+      const dailyAccounts = accounts
+        .filter(a => {
+          const accDate = a.opening_date || a.created_date;
+          return moment(accDate).format('YYYY-MM-DD') === dateStr;
+        })
+        .reduce((sum, a) => sum + (a.balance || 0), 0);
+
+      // 5. Seguros e Inversiones (Oportunidades ganadas)
+      const dailyOpportunities = opportunities
+        .filter(o => {
+          const oppDate = o.actual_close_date || o.updated_date || o.created_date;
+          const isTargetProduct = ['insurance', 'investment'].includes(o.product_type);
+          const isWon = o.stage === 'closed_won';
+          return isWon && isTargetProduct && moment(oppDate).format('YYYY-MM-DD') === dateStr;
+        })
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+
+      const totalDailySales = dailyTransactions + dailyCards + dailyLoans + dailyAccounts + dailyOpportunities;
+
+      // Mock Budget 
+      const baseBudget = 1500000; // Aumentamos presupuesto base al incluir más productos
+      const randomVariation = Math.random() * 200000 - 100000;
       const budget = Math.max(0, baseBudget + randomVariation);
 
-      // If no real sales data for this day (common in demo), generate some mock sales
-      // to make the chart look like the requirement
-      const sales = dailySales > 0 ? dailySales : Math.max(0, budget + (Math.random() * 400000 - 200000));
+      // Fallback mock data if 0 (for demo purposes visual consistency)
+      const sales = totalDailySales > 0 ? totalDailySales : Math.max(0, budget + (Math.random() * 800000 - 400000));
 
       days.push({
         date: displayDate,
@@ -53,7 +87,7 @@ export default function SalesVsBudgetChart({ transactions = [] }) {
       });
     }
     return days;
-  }, [transactions]);
+  }, [transactions, cards, loans, opportunities, accounts]);
 
   const formatCurrency = (value) => {
     if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
