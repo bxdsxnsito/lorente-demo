@@ -56,6 +56,8 @@ import { toast } from 'sonner';
 export default function Admin() {
   const [showRuleDialog, setShowRuleDialog] = useState(false);
   const [selectedRule, setSelectedRule] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
+  const [showUserDialog, setShowUserDialog] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: appUsers = [], refetch: refetchAppUsers } = useQuery({
@@ -73,6 +75,14 @@ export default function Admin() {
     onSuccess: () => {
       refetchAppUsers();
       toast.success('Usuario vinculado correctamente');
+    },
+  });
+
+  const updateAppUserMutation = useMutation({
+    mutationFn: ({ appUserId, data }) => base44.entities.AppUser.update(appUserId, data),
+    onSuccess: () => {
+      refetchAppUsers();
+      toast.success('Usuario actualizado correctamente');
     },
   });
 
@@ -203,6 +213,11 @@ export default function Admin() {
                         <div className="text-sm">
                           <p>{user.branch || '-'}</p>
                           <p className="text-xs text-slate-500">{user.department}</p>
+                          {user.position === 'oficial' && (
+                            <p className="text-xs text-blue-600 font-medium mt-1">
+                              Presupuesto: ${user.monthly_budget?.toLocaleString() || '50,000'}
+                            </p>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -213,13 +228,25 @@ export default function Admin() {
                          )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={
-                          user.status === 'active' 
-                            ? 'bg-green-50 text-green-700 border-green-200' 
-                            : 'bg-slate-50 text-slate-600'
-                        }>
-                          {user.status === 'active' ? 'Activo' : 'Inactivo'}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                            <Badge variant="outline" className={
+                            user.status === 'active' 
+                                ? 'bg-green-50 text-green-700 border-green-200' 
+                                : 'bg-slate-50 text-slate-600'
+                            }>
+                            {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                            </Badge>
+                            <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => {
+                                    setEditingUser(user);
+                                    setShowUserDialog(true);
+                                }}
+                            >
+                                <Edit className="h-4 w-4 text-slate-500" />
+                            </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -426,6 +453,66 @@ export default function Admin() {
             }}
             onCancel={() => setShowRuleDialog(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* User Edit Dialog */}
+      <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Editar Usuario: {editingUser?.full_name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="department">Departamento</Label>
+                      <Input
+                        id="department"
+                        value={editingUser?.department || ''}
+                        onChange={(e) => setEditingUser({ ...editingUser, department: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="branch">Sucursal</Label>
+                      <Input
+                        id="branch"
+                        value={editingUser?.branch || ''}
+                        onChange={(e) => setEditingUser({ ...editingUser, branch: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  {editingUser?.position === 'oficial' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="budget">Presupuesto Mensual ($)</Label>
+                        <Input
+                        id="budget"
+                        type="number"
+                        value={editingUser?.monthly_budget || 0}
+                        onChange={(e) => setEditingUser({ ...editingUser, monthly_budget: parseFloat(e.target.value) })}
+                        />
+                        <p className="text-xs text-slate-500">Este valor se usará para medir el cumplimiento de ventas en los dashboards.</p>
+                      </div>
+                  )}
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setShowUserDialog(false)}>Cancelar</Button>
+                <Button 
+                    className="bg-[#0B63FF]"
+                    onClick={() => {
+                        updateAppUserMutation.mutate({ 
+                            appUserId: editingUser.id, 
+                            data: {
+                                department: editingUser.department,
+                                branch: editingUser.branch,
+                                monthly_budget: editingUser.monthly_budget
+                            } 
+                        });
+                        setShowUserDialog(false);
+                    }}
+                >
+                    Guardar
+                </Button>
+            </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
