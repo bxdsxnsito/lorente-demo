@@ -245,7 +245,7 @@ export default function Dashboard() {
         <PageHeader 
           icon={LayoutDashboard}
           title="Dashboard Global"
-          subtitle="Vista Consolidada de Todos los Equipos Comerciales"
+          subtitle="Vista Consolidada de Todos los Vendedores"
         />
         <div className="flex flex-wrap gap-3">
           <Select value={filters.period} onValueChange={(v) => setFilters({...filters, period: v})}>
