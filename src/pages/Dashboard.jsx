@@ -238,7 +238,8 @@ export default function Dashboard() {
     return `$${value.toFixed(0)}`;
   };
 
-  const isManager = !user || ['admin', 'gerente', 'supervisor'].includes(user.position);
+  const currentAppUser = appUsers.find(u => u.email === user?.email);
+  const isManager = !user || user.role === 'admin' || (currentAppUser && ['admin', 'gerente', 'supervisor'].includes(currentAppUser.position));
 
   return (
     <div className="space-y-6">
