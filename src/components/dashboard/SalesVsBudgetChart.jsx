@@ -31,7 +31,10 @@ export default function SalesVsBudgetChart({
       
       // 1. Ejecuciones (Transacciones)
       const dailyTransactions = transactions
-        .filter(t => moment(t.created_date).format('YYYY-MM-DD') === dateStr)
+        .filter(t => {
+            const tDate = t.transaction_date || t.created_date;
+            return moment(tDate).format('YYYY-MM-DD') === dateStr;
+        })
         .reduce((sum, t) => {
              if (t.type === 'deposit' || t.type === 'transfer_in') {
                  return sum + (t.amount || 0);
