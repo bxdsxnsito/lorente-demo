@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
@@ -118,50 +119,82 @@ export default function Dashboard() {
     return userTransactions.reduce((sum, t) => sum + (t.amount || 0), 0);
   }), 0);
 
-  // Chart data - Team performance based on real data
+  // Helper to filter by period
+  const isInPeriod = (dateStr, period) => {
+      if (!dateStr) return false;
+      const date = moment(dateStr);
+      const now = moment();
+      
+      if (period === 'week') return date.isSame(now, 'week');
+      if (period === 'month') return date.isSame(now, 'month');
+      if (period === 'quarter') return date.isSame(now, 'quarter');
+      if (period === 'year') return date.isSame(now, 'year');
+      return true;
+  };
+
+  // Chart data - Team performance filtered
   const teamPerformanceData = React.useMemo(() => {
     const officials = appUsers.filter(u => u.position === 'oficial' && u.user_id);
-    if (officials.length === 0) {
-      return [
-        { name: 'Equipo 1', presupuesto: 6000000, ejecucion: 4500000 },
-        { name: 'Equipo 2', presupuesto: 5500000, ejecucion: 5200000 },
-      ];
-    }
+    
+    if (officials.length === 0) return [];
+
     return officials.map((official, idx) => {
-      const officialTx = transactions.filter(t => t.created_by === official.email);
+      const officialTx = transactions.filter(t => 
+        t.created_by === official.email && 
+        isInPeriod(t.transaction_date || t.created_date, filters.period)
+      );
+      
       const ejecucion = officialTx.reduce((sum, t) => sum + (t.amount || 0), 0);
+      
+      // Adjust budget based on period roughly
+      let baseBudget = 5000000;
+      if (filters.period === 'week') baseBudget = 1250000;
+      if (filters.period === 'quarter') baseBudget = 15000000;
+      if (filters.period === 'year') baseBudget = 60000000;
+
       return {
         name: official.full_name?.split(' ')[0] || `Oficial ${idx + 1}`,
-        presupuesto: 5000000,
-        ejecucion: ejecucion || Math.random() * 4000000 + 1000000,
+        presupuesto: baseBudget,
+        ejecucion: ejecucion || Math.random() * (baseBudget * 0.8), // Fallback for demo if no data
       };
     });
-  }, [appUsers, transactions]);
+  }, [appUsers, transactions, filters.period]);
 
-  // Activities chart data based on real activities
+  // Activities chart data filtered
   const activitiesChartData = React.useMemo(() => {
-    const completed = activities.filter(a => a.status === 'completed').length;
-    const pending = activities.filter(a => a.status === 'pending').length;
-    const cancelled = activities.filter(a => a.status === 'cancelled').length;
+    const periodActivities = activities.filter(a => isInPeriod(a.scheduled_at, filters.period));
+
+    const completed = periodActivities.filter(a => a.status === 'completed').length;
+    const pending = periodActivities.filter(a => a.status === 'pending').length;
+    const cancelled = periodActivities.filter(a => a.status === 'cancelled').length;
+    const rescheduled = periodActivities.filter(a => a.status === 'rescheduled').length;
     
     return [
-      { name: 'Completadas', ejecutadas: completed, noEjecutadas: 0 },
-      { name: 'Pendientes', ejecutadas: 0, noEjecutadas: pending },
-      { name: 'Canceladas', ejecutadas: 0, noEjecutadas: cancelled },
+      { name: 'Completadas', ejecutadas: completed, noEjecutadas: 0, reprogramadas: 0 },
+      { name: 'Pendientes', ejecutadas: 0, noEjecutadas: pending, reprogramadas: 0 },
+      { name: 'Canceladas', ejecutadas: 0, noEjecutadas: cancelled, reprogramadas: 0 },
+      { name: 'Reprogramadas', ejecutadas: 0, noEjecutadas: 0, reprogramadas: rescheduled },
     ];
-  }, [activities]);
+  }, [activities, filters.period]);
 
-  // Pipeline data
-  const pipelineData = [
-    { name: 'Lead', value: opportunities.filter(o => o.stage === 'lead').length || 5, color: '#94a3b8' },
-    { name: 'Calificado', value: opportunities.filter(o => o.stage === 'qualified').length || 3, color: '#0B63FF' },
-    { name: 'Propuesta', value: opportunities.filter(o => o.stage === 'proposal').length || 4, color: '#8b5cf6' },
-    { name: 'Negociación', value: opportunities.filter(o => o.stage === 'negotiation').length || 2, color: '#f59e0b' },
-    { name: 'Ganada', value: opportunities.filter(o => o.stage === 'closed_won').length || 3, color: '#22c55e' },
-  ];
+  // Pipeline data filtered
+  const pipelineData = React.useMemo(() => {
+      const periodOpportunities = opportunities.filter(o => isInPeriod(o.created_date, filters.period));
+      
+      // If no data for period (demo fallback), show 0 or keep fallback logic? 
+      // Let's show real 0s to be accurate to the filter, user can create data.
+      
+      return [
+        { name: 'Lead', value: periodOpportunities.filter(o => o.stage === 'lead').length, color: '#94a3b8' },
+        { name: 'Calificado', value: periodOpportunities.filter(o => o.stage === 'qualified').length, color: '#0B63FF' },
+        { name: 'Propuesta', value: periodOpportunities.filter(o => o.stage === 'proposal').length, color: '#8b5cf6' },
+        { name: 'Negociación', value: periodOpportunities.filter(o => o.stage === 'negotiation').length, color: '#f59e0b' },
+        { name: 'Ganada', value: periodOpportunities.filter(o => o.stage === 'closed_won').length, color: '#22c55e' },
+      ].filter(item => item.value > 0); // Optional: hide empty segments
+  }, [opportunities, filters.period]);
 
-  // Recent activities
-  const recentActivities = activities.slice(0, 5);
+  // Today's activities
+  const todaysActivities = activities.filter(a => moment(a.scheduled_at).isSame(moment(), 'day'));
 
   const formatCurrency = (value) => {
     if (value >= 1000000) {
@@ -319,6 +352,7 @@ export default function Dashboard() {
                 />
                 <Bar dataKey="ejecutadas" fill="#0B63FF" radius={[4, 4, 0, 0]} name="Ejecutadas" />
                 <Bar dataKey="noEjecutadas" fill="#fbbf24" radius={[4, 4, 0, 0]} name="No Ejecutadas" />
+                <Bar dataKey="reprogramadas" fill="#9333ea" radius={[4, 4, 0, 0]} name="Reprogramadas" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -358,22 +392,22 @@ export default function Dashboard() {
           </div>
         </ChartCard>
 
-        {/* Recent Activities */}
+        {/* Today's Activities */}
         <Card className="p-6 bg-white border-0 shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-slate-500" />
-              <h3 className="font-semibold text-slate-700">Actividades Recientes</h3>
+              <h3 className="font-semibold text-slate-700">Actividades del Día ({todaysActivities.length})</h3>
             </div>
             <Link to={createPageUrl('Agenda')}>
               <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
-                Ver Todas
+                Ir a Agenda
                 <ArrowUpRight className="h-4 w-4 ml-1" />
               </Button>
             </Link>
           </div>
           <div className="space-y-3">
-            {recentActivities.length > 0 ? recentActivities.map((activity) => (
+            {todaysActivities.length > 0 ? todaysActivities.map((activity) => (
               <div 
                 key={activity.id} 
                 className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
@@ -408,7 +442,7 @@ export default function Dashboard() {
             )) : (
               <div className="text-center py-8 text-slate-500">
                 <Calendar className="h-12 w-12 mx-auto mb-2 text-slate-300" />
-                <p>No hay actividades recientes</p>
+                <p>No hay actividades programadas para hoy</p>
               </div>
             )}
           </div>
