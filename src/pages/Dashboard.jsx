@@ -39,6 +39,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import StatsCard from '@/components/dashboard/StatsCard';
 import ChartCard from '@/components/dashboard/ChartCard';
 import StatusBadge from '@/components/common/StatusBadge';
+import SalesVsBudgetChart from '@/components/dashboard/SalesVsBudgetChart';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -226,6 +227,11 @@ export default function Dashboard() {
           iconBgColor="bg-purple-100"
           iconColor="text-purple-600"
         />
+      </div>
+
+      {/* Sales Trend Chart */}
+      <div className="grid grid-cols-1">
+        <SalesVsBudgetChart transactions={transactions} />
       </div>
 
       {/* Charts Row */}

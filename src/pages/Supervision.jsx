@@ -57,6 +57,7 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
+import SalesVsBudgetChart from '@/components/dashboard/SalesVsBudgetChart';
 
 export default function Supervision() {
   const [search, setSearch] = useState('');
@@ -226,6 +227,10 @@ export default function Supervision() {
             </div>
           </div>
         </Card>
+      </div>
+
+      <div className="grid grid-cols-1">
+        <SalesVsBudgetChart />
       </div>
 
       {/* Team Performance Chart */}
