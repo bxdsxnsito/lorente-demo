@@ -109,7 +109,7 @@ export default function Dashboard() {
     return sum;
   }, 0);
 
-  const activeTeams = new Set(appUsers.filter(u => u.position === 'oficial' && u.user_id).map(u => u.department)).size || 2;
+  const activeVendors = appUsers.filter(u => u.position === 'oficial' && u.status === 'active').length || 0;
   
   const completedActivities = activities.filter(a => a.status === 'completed').length;
   const totalActivities = activities.length;
@@ -238,6 +238,8 @@ export default function Dashboard() {
     return `$${value.toFixed(0)}`;
   };
 
+  const isManager = !user || ['admin', 'gerente', 'supervisor'].includes(user.position);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -245,7 +247,7 @@ export default function Dashboard() {
         <PageHeader 
           icon={LayoutDashboard}
           title="Dashboard Global"
-          subtitle="Vista Consolidada de Todos los Equipos Comerciales"
+          subtitle={isManager ? "Vista Consolidada de Vendedores" : "Vista de Mis Resultados"}
         />
         <div className="flex flex-wrap gap-3">
           <Select value={filters.period} onValueChange={(v) => setFilters({...filters, period: v})}>
@@ -284,8 +286,8 @@ export default function Dashboard() {
           iconColor="text-red-600"
         />
         <StatsCard
-          title="Equipos Comerciales Activos"
-          value={activeTeams}
+          title="Vendedores Activos"
+          value={activeVendors}
           subtitle={`${clients.length || 20} clientes`}
           icon={Users}
           iconBgColor="bg-blue-100"
@@ -300,7 +302,7 @@ export default function Dashboard() {
           iconColor="text-green-600"
         />
         <StatsCard
-          title="Mejor Equipo Comercial"
+          title="Mejor Vendedor"
           value="1"
           subtitle={formatCurrency(bestTeamSales || 191600000)}
           icon={Target}
@@ -324,7 +326,7 @@ export default function Dashboard() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Team Performance Chart */}
-        <ChartCard title="Presupuesto vs Ejecución por Equipo Comercial" icon={TrendingUp}>
+        <ChartCard title={isManager ? "Presupuesto vs Ejecución Vendedores" : "Presupuesto vs Mi Ejecución"} icon={TrendingUp}>
           <div className="h-[300px] mt-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={teamPerformanceData} barGap={8}>
