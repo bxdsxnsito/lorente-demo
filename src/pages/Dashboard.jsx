@@ -134,22 +134,30 @@ export default function Dashboard() {
 
   // Chart data - Team performance filtered
   const teamPerformanceData = React.useMemo(() => {
+    console.log('--- Debugging Team Performance Chart ---');
     // Obtenemos todos los oficiales (vendedores)
     const officials = appUsers.filter(u => u.position === 'oficial');
+    console.log('Officials found:', officials.length, officials.map(o => ({id: o.id, name: o.full_name})));
     
     if (officials.length === 0) return [];
 
     return officials.map((official, idx) => {
       // 1. Encontrar clientes asignados a este oficial
-      const officialClientIds = clients
-        .filter(c => c.assigned_official_id === official.id)
-        .map(c => c.id);
+      const officialClients = clients.filter(c => c.assigned_official_id === official.id);
+      const officialClientIds = officialClients.map(c => c.id);
+      console.log(`Official ${official.full_name}: found ${officialClients.length} clients`, officialClientIds);
 
       // 2. Filtrar transacciones de esos clientes en el periodo
-      const officialTx = transactions.filter(t => 
-        officialClientIds.includes(t.client_id) && 
-        isInPeriod(t.transaction_date || t.created_date, filters.period)
-      );
+      const officialTx = transactions.filter(t => {
+        const isClientMatch = officialClientIds.includes(t.client_id);
+        const inPeriod = isInPeriod(t.transaction_date || t.created_date, filters.period);
+        return isClientMatch && inPeriod;
+      });
+      
+      console.log(`Official ${official.full_name}: found ${officialTx.length} transactions in period ${filters.period}`);
+      if (officialTx.length > 0) {
+          console.log('Sample transaction types:', officialTx.map(t => t.type));
+      }
       
       const ejecucion = officialTx.reduce((sum, t) => {
            // Consideramos depósitos y transferencias entrantes como "Venta/Captación"
@@ -158,6 +166,8 @@ export default function Dashboard() {
            }
            return sum;
       }, 0);
+      
+      console.log(`Official ${official.full_name}: total execution calculated: ${ejecucion}`);
       
       // 3. Calcular Presupuesto basado en configuración del usuario
       const monthlyBudget = official.monthly_budget || 50000; // Default 50k si no tiene
