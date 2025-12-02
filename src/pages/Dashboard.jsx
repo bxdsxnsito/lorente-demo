@@ -134,31 +134,46 @@ export default function Dashboard() {
 
   // Chart data - Team performance filtered
   const teamPerformanceData = React.useMemo(() => {
-    const officials = appUsers.filter(u => u.position === 'oficial' && u.user_id);
+    // Obtenemos todos los oficiales (vendedores)
+    const officials = appUsers.filter(u => u.position === 'oficial');
     
     if (officials.length === 0) return [];
 
     return officials.map((official, idx) => {
+      // 1. Encontrar clientes asignados a este oficial
+      const officialClientIds = clients
+        .filter(c => c.assigned_official_id === official.id)
+        .map(c => c.id);
+
+      // 2. Filtrar transacciones de esos clientes en el periodo
       const officialTx = transactions.filter(t => 
-        t.created_by === official.email && 
+        officialClientIds.includes(t.client_id) && 
         isInPeriod(t.transaction_date || t.created_date, filters.period)
       );
       
-      const ejecucion = officialTx.reduce((sum, t) => sum + (t.amount || 0), 0);
+      const ejecucion = officialTx.reduce((sum, t) => {
+           // Consideramos depósitos y transferencias entrantes como "Venta/Captación"
+           if (t.type === 'deposit' || t.type === 'transfer_in') {
+               return sum + (t.amount || 0);
+           }
+           return sum;
+      }, 0);
       
-      // Adjust budget based on period roughly
-      let baseBudget = 5000000;
-      if (filters.period === 'week') baseBudget = 1250000;
-      if (filters.period === 'quarter') baseBudget = 15000000;
-      if (filters.period === 'year') baseBudget = 60000000;
+      // 3. Calcular Presupuesto basado en configuración del usuario
+      const monthlyBudget = official.monthly_budget || 50000; // Default 50k si no tiene
+      let periodBudget = monthlyBudget;
+
+      if (filters.period === 'week') periodBudget = monthlyBudget / 4;
+      if (filters.period === 'quarter') periodBudget = monthlyBudget * 3;
+      if (filters.period === 'year') periodBudget = monthlyBudget * 12;
 
       return {
         name: official.full_name?.split(' ')[0] || `Oficial ${idx + 1}`,
-        presupuesto: baseBudget,
-        ejecucion: ejecucion || Math.random() * (baseBudget * 0.8), // Fallback for demo if no data
+        presupuesto: Math.round(periodBudget),
+        ejecucion: Math.round(ejecucion),
       };
     });
-  }, [appUsers, transactions, filters.period]);
+  }, [appUsers, transactions, clients, filters.period]);
 
   // Activities chart data filtered
   const activitiesChartData = React.useMemo(() => {
