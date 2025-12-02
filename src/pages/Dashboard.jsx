@@ -252,6 +252,7 @@ export default function Dashboard() {
           loans={loans}
           opportunities={opportunities}
           accounts={accounts}
+          period={filters.period}
         />
       </div>
 

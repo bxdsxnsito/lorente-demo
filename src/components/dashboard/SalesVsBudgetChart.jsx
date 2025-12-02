@@ -18,23 +18,47 @@ export default function SalesVsBudgetChart({
   cards = [], 
   loans = [], 
   opportunities = [], 
-  accounts = [] 
+  accounts = [],
+  period = 'month'
 }) {
   const data = useMemo(() => {
-    const days = [];
+    const dataPoints = [];
+    let count = 30;
+    let unit = 'days';
+    let format = 'DD/MM';
+
+    if (period === 'week') count = 7;
+    if (period === 'quarter') count = 90;
+    if (period === 'year') {
+      count = 12;
+      unit = 'months';
+      format = 'MMM';
+    }
     
-    // Generate last 30 days
-    for (let i = 29; i >= 0; i--) {
-      const date = moment().subtract(i, 'days');
-      const dateStr = date.format('YYYY-MM-DD');
-      const displayDate = date.format('DD/MM');
+    for (let i = count - 1; i >= 0; i--) {
+      const date = moment().subtract(i, unit);
+      let dateStr, displayDate;
+
+      if (unit === 'months') {
+        dateStr = date.format('YYYY-MM'); // For filtering
+        displayDate = date.format(format);
+      } else {
+        dateStr = date.format('YYYY-MM-DD');
+        displayDate = date.format(format);
+      }
       
+      // Helper to check date match
+      const isSameDate = (itemDate) => {
+         if (!itemDate) return false;
+         if (unit === 'months') {
+             return moment(itemDate).format('YYYY-MM') === dateStr;
+         }
+         return moment(itemDate).format('YYYY-MM-DD') === dateStr;
+      };
+
       // 1. Ejecuciones (Transacciones)
       const dailyTransactions = transactions
-        .filter(t => {
-            const tDate = t.transaction_date || t.created_date;
-            return moment(tDate).format('YYYY-MM-DD') === dateStr;
-        })
+        .filter(t => isSameDate(t.transaction_date || t.created_date))
         .reduce((sum, t) => {
              if (t.type === 'deposit' || t.type === 'transfer_in') {
                  return sum + (t.amount || 0);
@@ -44,23 +68,17 @@ export default function SalesVsBudgetChart({
 
       // 2. Tarjetas (Límite de crédito otorgado)
       const dailyCards = cards
-        .filter(c => moment(c.created_date).format('YYYY-MM-DD') === dateStr)
+        .filter(c => isSameDate(c.created_date))
         .reduce((sum, c) => sum + (c.credit_limit || 0), 0);
 
       // 3. Créditos (Monto principal desembolsado)
       const dailyLoans = loans
-        .filter(l => {
-          const loanDate = l.disbursement_date || l.created_date;
-          return moment(loanDate).format('YYYY-MM-DD') === dateStr;
-        })
+        .filter(l => isSameDate(l.disbursement_date || l.created_date))
         .reduce((sum, l) => sum + (l.principal || 0), 0);
 
       // 4. Cuentas (Saldo inicial / Captación)
       const dailyAccounts = accounts
-        .filter(a => {
-          const accDate = a.opening_date || a.created_date;
-          return moment(accDate).format('YYYY-MM-DD') === dateStr;
-        })
+        .filter(a => isSameDate(a.opening_date || a.created_date))
         .reduce((sum, a) => sum + (a.balance || 0), 0);
 
       // 5. Seguros e Inversiones (Oportunidades ganadas)
@@ -69,28 +87,30 @@ export default function SalesVsBudgetChart({
           const oppDate = o.actual_close_date || o.updated_date || o.created_date;
           const isTargetProduct = ['insurance', 'investment'].includes(o.product_type);
           const isWon = o.stage === 'closed_won';
-          return isWon && isTargetProduct && moment(oppDate).format('YYYY-MM-DD') === dateStr;
+          return isWon && isTargetProduct && isSameDate(oppDate);
         })
         .reduce((sum, o) => sum + (o.amount || 0), 0);
 
-      const totalDailySales = dailyTransactions + dailyCards + dailyLoans + dailyAccounts + dailyOpportunities;
+      const totalSales = dailyTransactions + dailyCards + dailyLoans + dailyAccounts + dailyOpportunities;
 
-      // Mock Budget 
-      const baseBudget = 1500000; // Aumentamos presupuesto base al incluir más productos
-      const randomVariation = Math.random() * 200000 - 100000;
+      // Mock Budget Logic adjusted for period
+      let baseBudget = 1500000; 
+      if (unit === 'months') baseBudget = baseBudget * 30; // Scale budget for months
+      
+      const randomVariation = Math.random() * (baseBudget * 0.15) - (baseBudget * 0.075);
       const budget = Math.max(0, baseBudget + randomVariation);
 
-      // Fallback mock data if 0 (for demo purposes visual consistency)
-      const sales = totalDailySales > 0 ? totalDailySales : Math.max(0, budget + (Math.random() * 800000 - 400000));
+      // Fallback mock data logic
+      const sales = totalSales > 0 ? totalSales : Math.max(0, budget + (Math.random() * (baseBudget * 0.4) - (baseBudget * 0.2)));
 
-      days.push({
+      dataPoints.push({
         date: displayDate,
         ventas: Math.round(sales),
         presupuesto: Math.round(budget),
       });
     }
-    return days;
-  }, [transactions, cards, loans, opportunities, accounts]);
+    return dataPoints;
+  }, [transactions, cards, loans, opportunities, accounts, period]);
 
   const formatCurrency = (value) => {
     if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -99,7 +119,7 @@ export default function SalesVsBudgetChart({
   };
 
   return (
-    <ChartCard title="Tendencia de Ventas vs Presupuesto (Último mes)" icon={TrendingUp}>
+    <ChartCard title={`Tendencia de Ventas vs Presupuesto (${period === 'week' ? 'Última semana' : period === 'quarter' ? 'Último trimestre' : period === 'year' ? 'Último año' : 'Último mes'})`} icon={TrendingUp}>
       <div className="h-[300px] mt-4">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
