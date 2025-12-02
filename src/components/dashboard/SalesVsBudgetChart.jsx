@@ -94,18 +94,25 @@ export default function SalesVsBudgetChart({
       const totalSales = dailyTransactions + dailyCards + dailyLoans + dailyAccounts + dailyOpportunities;
 
       // Mock Budget Logic adjusted for period
-      let baseBudget = 1500000; 
-      if (unit === 'months') baseBudget = baseBudget * 30; // Scale budget for months
+      // Presupuesto mensual aprox 1.5M -> Diario ~50k
+      let baseBudget = 50000; 
+      if (unit === 'months') baseBudget = 1500000; // Mensual
       
-      const randomVariation = Math.random() * (baseBudget * 0.15) - (baseBudget * 0.075);
+      const randomVariation = Math.random() * (baseBudget * 0.2) - (baseBudget * 0.1);
       const budget = Math.max(0, baseBudget + randomVariation);
 
-      // Fallback mock data logic
-      const sales = totalSales > 0 ? totalSales : Math.max(0, budget + (Math.random() * (baseBudget * 0.4) - (baseBudget * 0.2)));
+      // Si hay ventas reales usamos eso, si no, simulamos algo cercano al presupuesto para que no se vea vacío
+      // Pero si hay ventas (aunque sean pocas), mostramos las reales.
+      // Para evitar que una venta pequeña de 1000 se vea invisible contra 50k, dejámoslo así, es la realidad.
+      const sales = totalSales; 
+      
+      // Simulación solo si todo es 0 en todo el dataset? No, mejor mezclar.
+      // Si totalSales es 0, usamos simulacion.
+      const finalSales = sales > 0 ? sales : Math.max(0, budget + (Math.random() * (baseBudget * 0.4) - (baseBudget * 0.2)));
 
       dataPoints.push({
         date: displayDate,
-        ventas: Math.round(sales),
+        ventas: Math.round(finalSales),
         presupuesto: Math.round(budget),
       });
     }
