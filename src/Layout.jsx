@@ -112,14 +112,14 @@ export default function Layout({ children, currentPageName }) {
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
-    { name: 'Clientes', icon: Users, page: 'Clients' },
     { name: 'Agenda Comercial', icon: Calendar, page: 'Agenda' },
     { name: 'Pipeline', icon: Target, page: 'Opportunities' },
+    { name: 'Clientes', icon: Users, page: 'Clients' },
     { name: 'Análisis IA', icon: Brain, page: 'AIAnalysis' },
-    { name: 'Simuladores', icon: Calculator, page: 'ProductSimulator' },
-    { name: 'Productos', icon: Briefcase, page: 'Products' },
     { name: 'Créditos', icon: TrendingUp, page: 'Loans' },
     { name: 'Tarjetas', icon: CreditCard, page: 'Cards' },
+    { name: 'Productos', icon: Briefcase, page: 'Products' },
+    { name: 'Simuladores', icon: Calculator, page: 'ProductSimulator' },
   ];
 
   const supervisorMenuItems = [
