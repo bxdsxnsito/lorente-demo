@@ -217,16 +217,23 @@ export default function Dashboard() {
   const pipelineData = React.useMemo(() => {
       const periodOpportunities = opportunities.filter(o => isInPeriod(o.created_date, filters.period));
       
-      // If no data for period (demo fallback), show 0 or keep fallback logic? 
-      // Let's show real 0s to be accurate to the filter, user can create data.
-      
-      return [
-        { name: 'Lead', value: periodOpportunities.filter(o => o.stage === 'lead').length, color: '#94a3b8' },
-        { name: 'Calificado', value: periodOpportunities.filter(o => o.stage === 'qualified').length, color: '#0B63FF' },
-        { name: 'Propuesta', value: periodOpportunities.filter(o => o.stage === 'proposal').length, color: '#8b5cf6' },
-        { name: 'Negociación', value: periodOpportunities.filter(o => o.stage === 'negotiation').length, color: '#f59e0b' },
-        { name: 'Ganada', value: periodOpportunities.filter(o => o.stage === 'closed_won').length, color: '#22c55e' },
-      ].filter(item => item.value > 0); // Optional: hide empty segments
+      const stages = [
+        { key: 'lead', name: 'Lead', color: '#94a3b8' },
+        { key: 'qualified', name: 'Calificado', color: '#0B63FF' },
+        { key: 'proposal', name: 'Propuesta', color: '#8b5cf6' },
+        { key: 'negotiation', name: 'Negociación', color: '#f59e0b' },
+        { key: 'closed_won', name: 'Ganada', color: '#22c55e' },
+      ];
+
+      return stages.map(stage => {
+        const stageOpps = periodOpportunities.filter(o => o.stage === stage.key);
+        return {
+          name: stage.name,
+          value: stageOpps.length,
+          amount: stageOpps.reduce((sum, o) => sum + (o.amount || 0), 0),
+          color: stage.color
+        };
+      }).filter(item => item.value > 0);
   }, [opportunities, filters.period]);
 
   // Today's activities
@@ -470,7 +477,18 @@ export default function Dashboard() {
                     <span className="text-sm text-slate-600">{value}</span>
                   )}
                 />
-                <Tooltip />
+                <Tooltip 
+                  formatter={(value, name, props) => [
+                    `${value} ops. - ${formatCurrency(props.payload.amount)}`, 
+                    name
+                  ]}
+                  contentStyle={{ 
+                    backgroundColor: 'white', 
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
