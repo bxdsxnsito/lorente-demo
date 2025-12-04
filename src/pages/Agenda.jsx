@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -48,10 +49,16 @@ import RulesEvaluationDialog from '@/components/agenda/RulesEvaluationDialog';
 import moment from 'moment';
 
 export default function Agenda() {
+  const [searchParams] = useSearchParams();
   const [view, setView] = useState('list');
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'all');
   const [typeFilter, setTypeFilter] = useState('all');
+
+  useEffect(() => {
+    const status = searchParams.get('status');
+    if (status) setStatusFilter(status);
+  }, [searchParams]);
   const [selectedDate, setSelectedDate] = useState(moment());
   const [showForm, setShowForm] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -324,6 +331,7 @@ export default function Agenda() {
                 <SelectItem value="in_progress">En Progreso</SelectItem>
                 <SelectItem value="completed">Completada</SelectItem>
                 <SelectItem value="cancelled">Cancelada</SelectItem>
+                <SelectItem value="rescheduled">Reprogramada</SelectItem>
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>

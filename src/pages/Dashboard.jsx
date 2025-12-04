@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
   LayoutDashboard,
@@ -43,6 +43,7 @@ import StatusBadge from '@/components/common/StatusBadge';
 import SalesVsBudgetChart from '@/components/dashboard/SalesVsBudgetChart';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [filters, setFilters] = useState({
     period: 'month',
@@ -241,6 +242,20 @@ export default function Dashboard() {
   const currentAppUser = appUsers.find(u => u.email === user?.email);
   const isManager = !user || user.role === 'admin' || (currentAppUser && ['admin', 'gerente', 'supervisor'].includes(currentAppUser.position));
 
+  const handleActivitiesChartClick = (data) => {
+    if (data && data.activePayload && data.activePayload.length > 0) {
+      const category = data.activePayload[0].payload.name;
+      let status = 'all';
+      
+      if (category === 'Completadas') status = 'completed';
+      else if (category === 'Pendientes') status = 'pending';
+      else if (category === 'Canceladas') status = 'cancelled';
+      else if (category === 'Reprogramadas') status = 'rescheduled';
+      
+      navigate(createPageUrl('Agenda') + `?status=${status}`);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -364,7 +379,12 @@ export default function Dashboard() {
         <ChartCard title="Visitas Ejecutadas vs No Ejecutadas" icon={MapPin}>
           <div className="h-[300px] mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={activitiesChartData} barGap={8}>
+              <BarChart 
+                data={activitiesChartData} 
+                barGap={8} 
+                onClick={handleActivitiesChartClick}
+                className="cursor-pointer"
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis 
                   dataKey="name" 
