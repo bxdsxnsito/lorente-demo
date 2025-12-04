@@ -60,7 +60,17 @@ export default function Agenda() {
     const type = searchParams.get('type');
     if (status) setStatusFilter(status);
     if (type) setTypeFilter(type);
-  }, [searchParams]);
+
+    // Check for activityId to auto-open modal
+    const activityId = searchParams.get('activityId');
+    if (activityId && activities.length > 0) {
+      const activity = activities.find(a => a.id === activityId);
+      if (activity) {
+        setSelectedActivity(activity);
+        setShowForm(true);
+      }
+    }
+  }, [searchParams, activities]);
   const [selectedDate, setSelectedDate] = useState(moment());
   const [showForm, setShowForm] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);

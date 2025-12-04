@@ -498,7 +498,8 @@ export default function Dashboard() {
               return (
                 <div 
                   key={activity.id} 
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
+                  onClick={() => navigate(createPageUrl('Agenda') + `?activityId=${activity.id}`)}
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${colorClass}`}>
