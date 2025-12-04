@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import {
   LayoutDashboard,
   Users,
@@ -40,6 +41,34 @@ export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+  // Fetch App Config
+  const { data: configs } = useQuery({
+    queryKey: ['appConfig'],
+    queryFn: () => base44.entities.AppConfig.list(),
+  });
+
+  const appConfig = configs?.[0] || {
+    appName: 'Banca Digital',
+    primaryColor: '#0B63FF',
+    secondaryColor: '#0A4DB6'
+  };
+
+  // Apply Favicon and Title
+  useEffect(() => {
+    if (appConfig.appName) {
+      document.title = appConfig.appName;
+    }
+    if (appConfig.faviconUrl) {
+      let link = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      link.href = appConfig.faviconUrl;
+    }
+  }, [appConfig]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -133,12 +162,15 @@ export default function Layout({ children, currentPageName }) {
         :root {
           --primary: 221 100% 52%;
           --primary-foreground: 0 0% 100%;
-          --sidebar-bg: linear-gradient(180deg, #0B63FF 0%, #0A4DB6 100%);
+          --sidebar-bg: linear-gradient(180deg, ${appConfig.primaryColor} 0%, ${appConfig.secondaryColor} 100%);
         }
       `}</style>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-[#0B63FF] to-[#0A4DB6] z-50 flex items-center justify-between px-4">
+      <div 
+        className="lg:hidden fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between px-4"
+        style={{ background: `linear-gradient(to right, ${appConfig.primaryColor}, ${appConfig.secondaryColor})` }}
+      >
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -149,8 +181,12 @@ export default function Layout({ children, currentPageName }) {
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           <div className="flex items-center gap-2">
-            <Building2 className="h-7 w-7 text-white" />
-            <span className="text-white font-bold text-lg">Banca Digital</span>
+            {appConfig.logoUrl ? (
+                <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
+            ) : (
+                <Building2 className="h-7 w-7 text-white" />
+            )}
+            <span className="text-white font-bold text-lg">{appConfig.appName}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -175,11 +211,15 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Sidebar */}
-      <aside className={cn(
-        "fixed top-0 left-0 h-full z-40 transition-all duration-300",
-        "bg-gradient-to-b from-[#0B63FF] to-[#0A4DB6]",
-        collapsed ? "w-20" : "w-64",
-        "lg:translate-x-0",
+      <aside 
+        className={cn(
+            "fixed top-0 left-0 h-full z-40 transition-all duration-300",
+            collapsed ? "w-20" : "w-64",
+            "lg:translate-x-0",
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+        style={{ background: `linear-gradient(to bottom, ${appConfig.primaryColor}, ${appConfig.secondaryColor})` }}
+      >
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
         {/* Logo */}

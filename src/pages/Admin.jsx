@@ -8,6 +8,7 @@ import {
   Zap,
   Plus,
   Edit,
+  Palette,
   Trash2,
   MoreVertical,
   CheckCircle,
@@ -52,6 +53,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { PageHeader } from '@/components/ui/page-header';
 import { toast } from 'sonner';
+import AppConfigForm from '@/components/admin/AppConfigForm';
 
 export default function Admin() {
   const [showRuleDialog, setShowRuleDialog] = useState(false);
@@ -145,12 +147,16 @@ export default function Admin() {
         subtitle="Configuración del sistema y reglas de negocio"
       />
 
-      <Tabs defaultValue="users" className="space-y-4">
-        <TabsList className="bg-white border p-1">
-          <TabsTrigger value="users" className="gap-2">
-            <Users className="h-4 w-4" />
-            Personal (AppUsers)
-          </TabsTrigger>
+      <Tabs defaultValue="config" className="space-y-4">
+      <TabsList className="bg-white border p-1 flex-wrap h-auto">
+        <TabsTrigger value="config" className="gap-2">
+          <Palette className="h-4 w-4" />
+          Configuración Global
+        </TabsTrigger>
+        <TabsTrigger value="users" className="gap-2">
+          <Users className="h-4 w-4" />
+          Personal (AppUsers)
+        </TabsTrigger>
           <TabsTrigger value="linking" className="gap-2">
             <CheckCircle className="h-4 w-4" />
             Homologación
@@ -160,6 +166,11 @@ export default function Admin() {
             Reglas de Negocio
           </TabsTrigger>
         </TabsList>
+
+        {/* Config Tab */}
+        <TabsContent value="config">
+          <AppConfigForm />
+        </TabsContent>
 
         {/* AppUsers Tab */}
         <TabsContent value="users">
