@@ -20,7 +20,8 @@ import {
   Menu,
   X,
   Bell,
-  Calculator
+  Calculator,
+  Brain
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -85,6 +86,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Clientes', icon: Users, page: 'Clients' },
     { name: 'Agenda Comercial', icon: Calendar, page: 'Agenda' },
     { name: 'Pipeline', icon: Target, page: 'Opportunities' },
+    { name: 'Análisis IA', icon: Brain, page: 'AIAnalysis' },
     { name: 'Simuladores', icon: Calculator, page: 'ProductSimulator' },
     { name: 'Productos', icon: Briefcase, page: 'Products' },
     { name: 'Créditos', icon: TrendingUp, page: 'Loans' },
