@@ -83,7 +83,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
     { name: 'Clientes', icon: Users, page: 'Clients' },
     { name: 'Agenda Comercial', icon: Calendar, page: 'Agenda' },
-    { name: 'Oportunidades', icon: Target, page: 'Opportunities' },
+    { name: 'Pipeline', icon: Target, page: 'Opportunities' },
     { name: 'Productos', icon: Briefcase, page: 'Products' },
     { name: 'Créditos', icon: TrendingUp, page: 'Loans' },
     { name: 'Tarjetas', icon: CreditCard, page: 'Cards' },

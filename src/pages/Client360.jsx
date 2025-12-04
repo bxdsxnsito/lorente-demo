@@ -219,7 +219,7 @@ export default function Client360() {
               <TabsTrigger value="transactions">Movimientos</TabsTrigger>
               <TabsTrigger value="products">Productos</TabsTrigger>
               <TabsTrigger value="activities">Actividades</TabsTrigger>
-              <TabsTrigger value="opportunities">Oportunidades</TabsTrigger>
+              <TabsTrigger value="opportunities">Pipeline</TabsTrigger>
               <TabsTrigger value="documents">Documentos</TabsTrigger>
             </TabsList>
 
@@ -446,7 +446,7 @@ export default function Client360() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-slate-50">
-                      <TableHead>Oportunidad</TableHead>
+                      <TableHead>Negocio</TableHead>
                       <TableHead>Producto</TableHead>
                       <TableHead>Monto</TableHead>
                       <TableHead>Etapa</TableHead>

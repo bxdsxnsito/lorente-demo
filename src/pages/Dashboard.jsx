@@ -417,7 +417,7 @@ export default function Dashboard() {
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Pipeline Summary */}
-        <ChartCard title="Pipeline de Oportunidades" icon={Target}>
+        <ChartCard title="Pipeline Comercial" icon={Target}>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

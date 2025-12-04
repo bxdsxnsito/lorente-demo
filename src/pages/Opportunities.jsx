@@ -209,15 +209,15 @@ export default function Opportunities() {
     <div className="space-y-6">
       <PageHeader 
         icon={Target}
-        title="Pipeline de Oportunidades"
-        subtitle="Gestión de oportunidades comerciales"
+        title="Pipeline Comercial"
+        subtitle="Gestión del pipeline comercial"
       >
         <Button 
           className="bg-[#0B63FF] hover:bg-[#0A4DB6] gap-2"
           onClick={() => { setSelectedOpportunity(null); setShowForm(true); }}
         >
           <Plus className="h-4 w-4" />
-          Nueva Oportunidad
+          Agregar al Pipeline
         </Button>
       </PageHeader>
 
@@ -237,7 +237,7 @@ export default function Opportunities() {
         <Card className="p-4 bg-white border-0 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500">Oportunidades</p>
+              <p className="text-sm text-slate-500">En Pipeline</p>
               <p className="text-2xl font-bold text-slate-900">{opportunities.length}</p>
             </div>
             <div className="p-3 rounded-xl bg-purple-100">
