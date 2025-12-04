@@ -510,17 +510,16 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
+                    <StatusBadge status={activity.status} size="sm" />
+                    <Avatar className="h-7 w-7">
+                      <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
+                        {activity.official_name?.slice(0, 2).toUpperCase() || 'OF'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                </div>
               );
             }) : (
-                  <StatusBadge status={activity.status} size="sm" />
-                  <Avatar className="h-7 w-7">
-                    <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
-                      {activity.official_name?.slice(0, 2).toUpperCase() || 'OF'}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-              </div>
-            )) : (
               <div className="text-center py-8 text-slate-500">
                 <Calendar className="h-12 w-12 mx-auto mb-2 text-slate-300" />
                 <p>No hay actividades programadas para hoy</p>
