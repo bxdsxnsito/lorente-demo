@@ -217,16 +217,17 @@ export default function Dashboard() {
   const pipelineData = React.useMemo(() => {
       const periodOpportunities = opportunities.filter(o => isInPeriod(o.created_date, filters.period));
       
-      // If no data for period (demo fallback), show 0 or keep fallback logic? 
-      // Let's show real 0s to be accurate to the filter, user can create data.
-      
+      const sumAmount = (stage) => periodOpportunities
+        .filter(o => o.stage === stage)
+        .reduce((sum, o) => sum + (o.amount || 0), 0);
+
       return [
-        { name: 'Lead', value: periodOpportunities.filter(o => o.stage === 'lead').length, color: '#94a3b8' },
-        { name: 'Calificado', value: periodOpportunities.filter(o => o.stage === 'qualified').length, color: '#0B63FF' },
-        { name: 'Propuesta', value: periodOpportunities.filter(o => o.stage === 'proposal').length, color: '#8b5cf6' },
-        { name: 'Negociación', value: periodOpportunities.filter(o => o.stage === 'negotiation').length, color: '#f59e0b' },
-        { name: 'Ganada', value: periodOpportunities.filter(o => o.stage === 'closed_won').length, color: '#22c55e' },
-      ].filter(item => item.value > 0); // Optional: hide empty segments
+        { name: 'Lead', value: sumAmount('lead'), color: '#94a3b8' },
+        { name: 'Calificado', value: sumAmount('qualified'), color: '#0B63FF' },
+        { name: 'Propuesta', value: sumAmount('proposal'), color: '#8b5cf6' },
+        { name: 'Negociación', value: sumAmount('negotiation'), color: '#f59e0b' },
+        { name: 'Ganada', value: sumAmount('closed_won'), color: '#22c55e' },
+      ].filter(item => item.value > 0);
   }, [opportunities, filters.period]);
 
   // Today's activities
@@ -470,7 +471,7 @@ export default function Dashboard() {
                     <span className="text-sm text-slate-600">{value}</span>
                   )}
                 />
-                <Tooltip />
+                <Tooltip formatter={(value) => formatCurrency(value)} />
               </PieChart>
             </ResponsiveContainer>
           </div>
