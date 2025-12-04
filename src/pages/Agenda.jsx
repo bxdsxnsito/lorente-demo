@@ -55,6 +55,16 @@ export default function Agenda() {
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'all');
   const [typeFilter, setTypeFilter] = useState(searchParams.get('type') || 'all');
 
+  const { data: activities = [], isLoading, refetch } = useQuery({
+    queryKey: ['activities'],
+    queryFn: () => base44.entities.Activity.list('-scheduled_at', 100),
+  });
+
+  const { data: clients = [] } = useQuery({
+    queryKey: ['clients'],
+    queryFn: () => base44.entities.Client.list(),
+  });
+
   useEffect(() => {
     const status = searchParams.get('status');
     const type = searchParams.get('type');
@@ -100,15 +110,7 @@ export default function Agenda() {
     loadUser();
   }, []);
 
-  const { data: activities = [], isLoading, refetch } = useQuery({
-    queryKey: ['activities'],
-    queryFn: () => base44.entities.Activity.list('-scheduled_at', 100),
-  });
 
-  const { data: clients = [] } = useQuery({
-    queryKey: ['clients'],
-    queryFn: () => base44.entities.Client.list(),
-  });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Activity.update(id, data),
