@@ -13,6 +13,7 @@ Deno.serve(async (req) => {
             activity_id, 
             result, 
             notes, 
+            related_product,
             location,
             document_url 
         } = await req.json();
@@ -38,6 +39,7 @@ Deno.serve(async (req) => {
         const updateData = {
             status: 'completed',
             result: result || 'successful',
+            related_product: related_product || null,
             notes: notes || activity.notes,
             checkin_at: checkinTime,
         };

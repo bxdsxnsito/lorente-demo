@@ -27,6 +27,7 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
   const [gettingLocation, setGettingLocation] = useState(false);
   const [location, setLocation] = useState(null);
   const [result, setResult] = useState('successful');
+  const [relatedProduct, setRelatedProduct] = useState('');
   const [notes, setNotes] = useState('');
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -37,6 +38,7 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
   useEffect(() => {
     if (open && activity) {
       setResult(activity.result || 'successful');
+      setRelatedProduct(activity.related_product || '');
       setNotes(activity.notes || '');
       setLocation(null);
       setFiles([]);
@@ -172,6 +174,7 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
         activity_id: activity.id,
         result: result,
         notes: notes,
+        related_product: relatedProduct,
         location: location,
         document_urls: files.map(f => f.url),
       });
@@ -259,6 +262,26 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
               </SelectContent>
             </Select>
           </div>
+
+          {/* Related Product - Only if Successful */}
+          {result === 'successful' && (
+            <div>
+              <Label>Producto Relacionado</Label>
+              <Select value={relatedProduct} onValueChange={setRelatedProduct}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar producto..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="accounts">Cuentas</SelectItem>
+                  <SelectItem value="cards">Tarjetas</SelectItem>
+                  <SelectItem value="loans">Créditos</SelectItem>
+                  <SelectItem value="insurance">Seguros</SelectItem>
+                  <SelectItem value="investments">Inversiones</SelectItem>
+                  <SelectItem value="other">Otro</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           
           {/* Notes */}
           <div>
