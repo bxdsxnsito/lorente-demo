@@ -281,7 +281,7 @@ export default function Agenda() {
       <PageHeader 
         icon={Calendar}
         title="Agenda Comercial"
-        subtitle="Gestión de actividades y visitas"
+        subtitle="Gestión de actividades y citas"
       >
         <div className="flex items-center border rounded-lg p-1 bg-white">
           <Button
@@ -342,7 +342,7 @@ export default function Agenda() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="visit">Visita</SelectItem>
+                <SelectItem value="visit">Cita</SelectItem>
                 <SelectItem value="call">Llamada</SelectItem>
                 <SelectItem value="meeting">Reunión</SelectItem>
                 <SelectItem value="follow_up">Seguimiento</SelectItem>

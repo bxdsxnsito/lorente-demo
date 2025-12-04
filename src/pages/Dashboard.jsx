@@ -310,7 +310,7 @@ export default function Dashboard() {
           iconColor="text-blue-600"
         />
         <StatsCard
-          title="Visitas Totales"
+          title="Citas Totales"
           value={totalActivities || 73}
           subtitle={`${completedActivities || 10} completadas`}
           icon={MapPin}
@@ -376,7 +376,7 @@ export default function Dashboard() {
         </ChartCard>
 
         {/* Activities Chart */}
-        <ChartCard title="Visitas Ejecutadas vs No Ejecutadas" icon={MapPin}>
+        <ChartCard title="Citas Ejecutadas vs No Ejecutadas" icon={MapPin}>
           <div className="h-[300px] mt-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart 
