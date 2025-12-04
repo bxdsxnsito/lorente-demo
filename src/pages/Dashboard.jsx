@@ -252,7 +252,7 @@ export default function Dashboard() {
       else if (category === 'Canceladas') status = 'cancelled';
       else if (category === 'Reprogramadas') status = 'rescheduled';
       
-      navigate(createPageUrl('Agenda') + `?status=${status}`);
+      navigate(createPageUrl('Agenda') + `?status=${status}&type=visit`);
     }
   };
 

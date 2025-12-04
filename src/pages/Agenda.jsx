@@ -53,11 +53,13 @@ export default function Agenda() {
   const [view, setView] = useState('list');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'all');
-  const [typeFilter, setTypeFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState(searchParams.get('type') || 'all');
 
   useEffect(() => {
     const status = searchParams.get('status');
+    const type = searchParams.get('type');
     if (status) setStatusFilter(status);
+    if (type) setTypeFilter(type);
   }, [searchParams]);
   const [selectedDate, setSelectedDate] = useState(moment());
   const [showForm, setShowForm] = useState(false);
