@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { MapPin, Upload, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { MapPin, Upload, Loader2, CheckCircle, AlertCircle, Camera, X } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 
@@ -28,7 +28,7 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
   const [location, setLocation] = useState(null);
   const [result, setResult] = useState('successful');
   const [notes, setNotes] = useState('');
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
       setResult(activity.result || 'successful');
       setNotes(activity.notes || '');
       setLocation(null);
-      setFile(null);
+      setFiles([]);
     }
   }, [open, activity]);
 
@@ -69,32 +69,42 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
   };
 
   const handleFileChange = async (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length > 0) {
       setUploading(true);
       try {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: selectedFile });
-        setFile({ name: selectedFile.name, url: file_url });
-        toast.success('Documento subido correctamente');
-        
-        // Save document record
-        if (activity) {
-          await base44.entities.Document.create({
-            client_id: activity.client_id,
-            activity_id: activity.id,
-            document_type: 'other',
-            filename: selectedFile.name,
-            file_url: file_url,
-            status: 'pending',
-          });
+        const newFiles = [];
+        for (const selectedFile of selectedFiles) {
+            const { file_url } = await base44.integrations.Core.UploadFile({ file: selectedFile });
+            
+            // Save document record
+            if (activity) {
+              await base44.entities.Document.create({
+                client_id: activity.client_id,
+                activity_id: activity.id,
+                document_type: 'other',
+                filename: selectedFile.name,
+                file_url: file_url,
+                status: 'pending',
+              });
+            }
+            newFiles.push({ name: selectedFile.name, url: file_url });
         }
+        setFiles(prev => [...prev, ...newFiles]);
+        toast.success(`${newFiles.length} documento(s) subido(s) correctamente`);
       } catch (error) {
         console.error('Error uploading file:', error);
         toast.error('Error al subir documento');
       } finally {
         setUploading(false);
+        // Reset input to allow selecting same file again
+        e.target.value = '';
       }
     }
+  };
+
+  const removeFile = (index) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -107,7 +117,7 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
         result: result,
         notes: notes,
         location: location,
-        document_url: file?.url,
+        document_urls: files.map(f => f.url),
       });
       
       const data = response.data;
@@ -207,36 +217,87 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
           
           {/* Document Upload */}
           <div>
-            <Label>Adjuntar Documento</Label>
-            <div className="mt-2">
-              {file ? (
-                <div className="p-3 bg-blue-50 rounded-lg flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm text-blue-700 truncate">{file.name}</span>
-                </div>
-              ) : (
-                <label className="cursor-pointer">
-                  <div className="p-4 border-2 border-dashed rounded-lg text-center hover:bg-slate-50 transition-colors">
-                    {uploading ? (
-                      <Loader2 className="h-6 w-6 mx-auto animate-spin text-slate-400" />
-                    ) : (
-                      <>
-                        <Upload className="h-6 w-6 mx-auto text-slate-400 mb-1" />
-                        <p className="text-sm text-slate-500">Click para subir</p>
-                      </>
-                    )}
+            <Label>Adjuntar Documentos / Fotos</Label>
+            
+            {/* File List */}
+            {files.length > 0 && (
+              <div className="mt-2 space-y-2 mb-3">
+                {files.map((f, idx) => (
+                  <div key={idx} className="p-2 bg-blue-50 rounded-lg flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <CheckCircle className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                      <span className="text-sm text-blue-700 truncate">{f.name}</span>
+                    </div>
+                    <Button 
+                      type="button"
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 text-blue-400 hover:text-blue-600"
+                      onClick={() => removeFile(idx)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-2 grid grid-cols-2 gap-3">
+               {/* Upload Button */}
+               <div>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="w-full h-auto py-4 flex flex-col gap-2"
+                    onClick={() => document.getElementById('file-upload').click()}
+                    disabled={uploading}
+                  >
+                    {uploading ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                    ) : (
+                      <Upload className="h-5 w-5 text-slate-500" />
+                    )}
+                    <span className="text-xs">Subir Archivos</span>
+                  </Button>
                   <Input 
+                    id="file-upload"
                     type="file" 
+                    multiple
                     className="hidden" 
                     onChange={handleFileChange}
                     disabled={uploading}
                   />
-                </label>
-              )}
+               </div>
+
+               {/* Camera Button */}
+               <div>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="w-full h-auto py-4 flex flex-col gap-2"
+                    onClick={() => document.getElementById('camera-upload').click()}
+                    disabled={uploading}
+                  >
+                    {uploading ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                    ) : (
+                      <Camera className="h-5 w-5 text-slate-500" />
+                    )}
+                    <span className="text-xs">Tomar Foto</span>
+                  </Button>
+                  <Input 
+                    id="camera-upload"
+                    type="file" 
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden" 
+                    onChange={handleFileChange}
+                    disabled={uploading}
+                  />
+               </div>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
-              Enviado al repositorio (simulado)
+            <p className="text-xs text-slate-500 mt-2">
+              Los documentos y fotos se guardarán automáticamente.
             </p>
           </div>
         </div>
