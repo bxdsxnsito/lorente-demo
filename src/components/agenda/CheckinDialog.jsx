@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import {
   Dialog,
@@ -30,6 +30,9 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
   const [notes, setNotes] = useState('');
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     if (open && activity) {
@@ -37,7 +40,12 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
       setNotes(activity.notes || '');
       setLocation(null);
       setFiles([]);
+      setIsCameraOpen(false);
     }
+    
+    return () => {
+      stopCamera();
+    };
   }, [open, activity]);
 
   const getLocation = () => {
@@ -68,38 +76,86 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
     }
   };
 
-  const handleFileChange = async (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    if (selectedFiles.length > 0) {
-      setUploading(true);
-      try {
-        const newFiles = [];
-        for (const selectedFile of selectedFiles) {
-            const { file_url } = await base44.integrations.Core.UploadFile({ file: selectedFile });
-            
-            // Save document record
-            if (activity) {
-              await base44.entities.Document.create({
-                client_id: activity.client_id,
-                activity_id: activity.id,
-                document_type: 'other',
-                filename: selectedFile.name,
-                file_url: file_url,
-                status: 'pending',
-              });
-            }
-            newFiles.push({ name: selectedFile.name, url: file_url });
-        }
-        setFiles(prev => [...prev, ...newFiles]);
-        toast.success(`${newFiles.length} documento(s) subido(s) correctamente`);
-      } catch (error) {
-        console.error('Error uploading file:', error);
-        toast.error('Error al subir documento');
-      } finally {
-        setUploading(false);
-        // Reset input to allow selecting same file again
-        e.target.value = '';
+  const processFilesUpload = async (filesToUpload) => {
+    if (filesToUpload.length === 0) return;
+    
+    setUploading(true);
+    try {
+      const newFiles = [];
+      for (const selectedFile of filesToUpload) {
+          const { file_url } = await base44.integrations.Core.UploadFile({ file: selectedFile });
+          
+          // Save document record
+          if (activity) {
+            await base44.entities.Document.create({
+              client_id: activity.client_id,
+              activity_id: activity.id,
+              document_type: 'other',
+              filename: selectedFile.name,
+              file_url: file_url,
+              status: 'pending',
+            });
+          }
+          newFiles.push({ name: selectedFile.name, url: file_url });
       }
+      setFiles(prev => [...prev, ...newFiles]);
+      toast.success(`${newFiles.length} documento(s) subido(s) correctamente`);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast.error('Error al subir documento');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    processFilesUpload(selectedFiles);
+    e.target.value = '';
+  };
+
+  const startCamera = async () => {
+    try {
+      setIsCameraOpen(true);
+      // Wait for modal to render video element
+      setTimeout(async () => {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } 
+          });
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        }
+      }, 100);
+    } catch (err) {
+      console.error("Error accessing camera", err);
+      toast.error("No se pudo acceder a la cámara");
+      setIsCameraOpen(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach(track => track.stop());
+    }
+    setIsCameraOpen(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const context = canvasRef.current.getContext('2d');
+      canvasRef.current.width = videoRef.current.videoWidth;
+      canvasRef.current.height = videoRef.current.videoHeight;
+      
+      context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+      
+      canvasRef.current.toBlob(blob => {
+        const file = new File([blob], `foto_${moment().format('YYYYMMDD_HHmmss')}.jpg`, { type: "image/jpeg" });
+        processFilesUpload([file]);
+        stopCamera();
+      }, 'image/jpeg', 0.8);
     }
   };
 
@@ -275,7 +331,7 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
                     type="button"
                     variant="outline" 
                     className="w-full h-auto py-4 flex flex-col gap-2"
-                    onClick={() => document.getElementById('camera-upload').click()}
+                    onClick={startCamera}
                     disabled={uploading}
                   >
                     {uploading ? (
@@ -285,21 +341,48 @@ export default function CheckinDialog({ open, onOpenChange, activity, onSuccess 
                     )}
                     <span className="text-xs">Tomar Foto</span>
                   </Button>
-                  <Input 
-                    id="camera-upload"
-                    type="file" 
-                    accept="image/*"
-                    capture="environment"
-                    className="hidden" 
-                    onChange={handleFileChange}
-                    disabled={uploading}
-                  />
                </div>
             </div>
             <p className="text-xs text-slate-500 mt-2">
               Los documentos y fotos se guardarán automáticamente.
             </p>
           </div>
+          
+          {/* Camera Overlay */}
+          {isCameraOpen && (
+            <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
+              <div className="relative w-full max-w-lg bg-black rounded-lg overflow-hidden aspect-[3/4] md:aspect-video">
+                <video 
+                  ref={videoRef} 
+                  autoPlay 
+                  playsInline 
+                  className="w-full h-full object-cover"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+                
+                <div className="absolute bottom-6 left-0 right-0 flex justify-center items-center gap-8">
+                  <Button 
+                    variant="secondary" 
+                    size="icon"
+                    className="h-12 w-12 rounded-full bg-white/20 text-white hover:bg-white/30"
+                    onClick={stopCamera}
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                  
+                  <Button 
+                    size="icon"
+                    className="h-16 w-16 rounded-full bg-white border-4 border-white/30 hover:bg-slate-100"
+                    onClick={capturePhoto}
+                  >
+                    <div className="h-12 w-12 rounded-full border-2 border-black/10" />
+                  </Button>
+                  
+                  <div className="w-12" /> {/* Spacer for balance */}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         <DialogFooter>
