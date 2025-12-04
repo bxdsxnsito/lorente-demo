@@ -11,6 +11,7 @@ import Admin from './pages/Admin';
 import DeveloperControls from './pages/DeveloperControls';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import ProductSimulator from './pages/ProductSimulator';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +29,7 @@ export const PAGES = {
     "DeveloperControls": DeveloperControls,
     "Profile": Profile,
     "Settings": Settings,
+    "ProductSimulator": ProductSimulator,
 }
 
 export const pagesConfig = {
