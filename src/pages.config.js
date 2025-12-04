@@ -12,6 +12,7 @@ import DeveloperControls from './pages/DeveloperControls';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import ProductSimulator from './pages/ProductSimulator';
+import AIAnalysis from './pages/AIAnalysis';
 import __Layout from './Layout.jsx';
 
 
@@ -30,6 +31,7 @@ export const PAGES = {
     "Profile": Profile,
     "Settings": Settings,
     "ProductSimulator": ProductSimulator,
+    "AIAnalysis": AIAnalysis,
 }
 
 export const pagesConfig = {
