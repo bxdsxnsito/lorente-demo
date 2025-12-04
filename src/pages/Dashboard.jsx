@@ -17,7 +17,10 @@ import {
   MoreHorizontal,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Phone,
+  FileText,
+  Upload
 } from 'lucide-react';
 import {
   BarChart,
@@ -242,6 +245,32 @@ export default function Dashboard() {
   const currentAppUser = appUsers.find(u => u.email === user?.email);
   const isManager = !user || user.role === 'admin' || (currentAppUser && ['admin', 'gerente', 'supervisor'].includes(currentAppUser.position));
 
+  const getActivityTypeIcon = (type) => {
+    const icons = {
+      visit: MapPin,
+      call: Phone,
+      meeting: Users,
+      follow_up: Clock,
+      presentation: FileText,
+      document_collection: Upload,
+      onboarding: CheckCircle,
+    };
+    return icons[type] || Calendar;
+  };
+
+  const getActivityTypeColor = (type) => {
+    const colors = {
+      visit: 'bg-green-100 text-green-700',
+      call: 'bg-blue-100 text-blue-700',
+      meeting: 'bg-purple-100 text-purple-700',
+      follow_up: 'bg-amber-100 text-amber-700',
+      presentation: 'bg-pink-100 text-pink-700',
+      document_collection: 'bg-cyan-100 text-cyan-700',
+      onboarding: 'bg-emerald-100 text-emerald-700',
+    };
+    return colors[type] || 'bg-slate-100 text-slate-700';
+  };
+
   const handleActivitiesChartClick = (data) => {
     if (data && data.activePayload && data.activePayload.length > 0) {
       const category = data.activePayload[0].payload.name;
@@ -462,30 +491,27 @@ export default function Dashboard() {
             </Link>
           </div>
           <div className="space-y-3">
-            {todaysActivities.length > 0 ? todaysActivities.map((activity) => (
-              <div 
-                key={activity.id} 
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${
-                    activity.status === 'completed' ? 'bg-green-100' : 
-                    activity.status === 'pending' ? 'bg-yellow-100' : 'bg-blue-100'
-                  }`}>
-                    {activity.status === 'completed' ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : activity.status === 'pending' ? (
-                      <Clock className="h-4 w-4 text-yellow-600" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4 text-blue-600" />
-                    )}
+            {todaysActivities.length > 0 ? todaysActivities.map((activity) => {
+              const Icon = getActivityTypeIcon(activity.activity_type);
+              const colorClass = getActivityTypeColor(activity.activity_type);
+              
+              return (
+                <div 
+                  key={activity.id} 
+                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${colorClass}`}>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-700 text-sm">{activity.title || activity.activity_type}</p>
+                      <p className="text-xs text-slate-500">{activity.client_name}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-slate-700 text-sm">{activity.title || activity.activity_type}</p>
-                    <p className="text-xs text-slate-500">{activity.client_name}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3">
+              );
+            }) : (
                   <StatusBadge status={activity.status} size="sm" />
                   <Avatar className="h-7 w-7">
                     <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
