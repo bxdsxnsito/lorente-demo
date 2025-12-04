@@ -168,7 +168,7 @@ export default function ActivityFormDialog({ open, onOpenChange, activity, clien
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="visit">Visita</SelectItem>
+                  <SelectItem value="visit">Cita</SelectItem>
                   <SelectItem value="call">Llamada</SelectItem>
                   <SelectItem value="meeting">Reunión</SelectItem>
                   <SelectItem value="follow_up">Seguimiento</SelectItem>
