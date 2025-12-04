@@ -220,20 +220,22 @@ export default function Layout({ children, currentPageName }) {
         )}
         style={{ background: `linear-gradient(to bottom, ${appConfig.primaryColor}, ${appConfig.secondaryColor})` }}
       >
-        mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
         {/* Logo */}
         <div className={cn(
           "h-20 flex items-center border-b border-white/10",
           collapsed ? "justify-center px-2" : "px-6"
         )}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-white" />
+            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden">
+                {appConfig.logoUrl ? (
+                    <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
+                ) : (
+                    <Building2 className="h-6 w-6 text-white" />
+                )}
             </div>
             {!collapsed && (
               <div>
-                <h1 className="text-white font-bold text-lg leading-tight">Banca Digital</h1>
+                <h1 className="text-white font-bold text-lg leading-tight">{appConfig.appName}</h1>
                 <p className="text-blue-200 text-xs">Agenda Comercial</p>
               </div>
             )}
