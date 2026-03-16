@@ -23,16 +23,24 @@ export default function RouteMap() {
     load();
   }, []);
 
-  // Cargar actividades del oficial actual
-  const { data: activities = [], isLoading: loadingActivities } = useQuery({
-    queryKey: ['activities-routemap', currentUser?.id],
+  // Cargar AppUser vinculado al usuario actual
+  const { data: appUser } = useQuery({
+    queryKey: ['appuser-routemap', currentUser?.id],
     queryFn: async () => {
       const appUsers = await base44.entities.AppUser.list();
-      const appUser = appUsers.find(au => au.user_id === currentUser.id || au.email === currentUser.email);
+      return appUsers.find(au => au.user_id === currentUser.id || au.email === currentUser.email) || null;
+    },
+    enabled: !!currentUser,
+  });
+
+  // Cargar TODAS las actividades del oficial (sin filtro de fecha en BD, filtramos en cliente)
+  const { data: activities = [], isLoading: loadingActivities } = useQuery({
+    queryKey: ['activities-routemap', appUser?.id],
+    queryFn: async () => {
       if (!appUser) return [];
       return base44.entities.Activity.filter({ official_id: appUser.id });
     },
-    enabled: !!currentUser,
+    enabled: !!appUser,
   });
 
   // Cargar todos los clientes
