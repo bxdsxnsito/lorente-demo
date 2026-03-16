@@ -225,7 +225,9 @@ export default function Layout({ children, currentPageName }) {
           collapsed ? "justify-center px-2" : "px-6"
         )}>
           <div className="flex items-center gap-3">
-            <BancopLogo size={40} />
+            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden">
+                <BancopLogo size={36} />
+            </div>
             {!collapsed && (
               <div>
                 <h1 className="text-white font-bold text-lg leading-tight">{appConfig.appName}</h1>
