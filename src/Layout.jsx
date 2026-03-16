@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import BancopLogo from '@/components/common/BancopLogo';
 
 export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -228,11 +229,11 @@ export default function Layout({ children, currentPageName }) {
           collapsed ? "justify-center px-2" : "px-6"
         )}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center overflow-hidden">
+            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden">
                 {appConfig.logoUrl ? (
                     <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />
                 ) : (
-                    <Building2 className="h-6 w-6 text-blue-700" />
+                    <Building2 className="h-6 w-6 text-white" />
                 )}
             </div>
             {!collapsed && (
