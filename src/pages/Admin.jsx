@@ -400,8 +400,24 @@ export default function Admin() {
            </div>
         </TabsContent>
 
+        {/* Debug Tab */}
+        <TabsContent value="debug">
+          <Card className="bg-white border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle>Panel de Diagnóstico</CardTitle>
+              <p className="text-sm text-slate-500">Valida el estado de usuarios en Base44 Auth y AppUser</p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <Label>Buscar usuario por email</Label>
+                <DebugUserSearch baseUsers={baseUsers} appUsers={appUsers} />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Rules Tab */}
-        <TabsContent value="rules">
+         <TabsContent value="rules">
           <Card className="bg-white border-0 shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Motor de Reglas de Negocio (Simulado)</CardTitle>
