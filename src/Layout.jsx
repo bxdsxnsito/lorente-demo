@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import BancopLogo from '@/components/common/BancopLogo';
 
 export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -183,13 +184,7 @@ export default function Layout({ children, currentPageName }) {
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           <div className="flex items-center gap-2">
-            {appConfig.logoUrl ? (
-              <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center overflow-hidden">
-                <img src={appConfig.logoUrl} alt="Logo" className="h-7 w-7 object-contain" />
-              </div>
-            ) : (
-              <Building2 className="h-7 w-7 text-white" />
-            )}
+            <BancopLogo size={32} />
             <span className="text-white font-bold text-lg">{appConfig.appName}</span>
           </div>
         </div>
@@ -230,11 +225,11 @@ export default function Layout({ children, currentPageName }) {
           collapsed ? "justify-center px-2" : "px-6"
         )}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center overflow-hidden">
+            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden">
                 {appConfig.logoUrl ? (
                     <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />
                 ) : (
-                    <Building2 className="h-6 w-6 text-blue-700" />
+                    <Building2 className="h-6 w-6 text-white" />
                 )}
             </div>
             {!collapsed && (
