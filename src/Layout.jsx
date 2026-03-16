@@ -37,7 +37,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import BancopLogo from '@/components/common/BancopLogo';
 
 export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -184,7 +183,11 @@ export default function Layout({ children, currentPageName }) {
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           <div className="flex items-center gap-2">
-            <BancopLogo size={32} />
+            {appConfig.logoUrl ? (
+                <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />
+            ) : (
+                <Building2 className="h-7 w-7 text-white" />
+            )}
             <span className="text-white font-bold text-lg">{appConfig.appName}</span>
           </div>
         </div>
@@ -226,7 +229,11 @@ export default function Layout({ children, currentPageName }) {
         )}>
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden">
-                <BancopLogo size={36} />
+                {appConfig.logoUrl ? (
+                    <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />
+                ) : (
+                    <Building2 className="h-6 w-6 text-white" />
+                )}
             </div>
             {!collapsed && (
               <div>
