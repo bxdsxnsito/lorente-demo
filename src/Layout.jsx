@@ -49,9 +49,9 @@ export default function Layout({ children, currentPageName }) {
   });
 
   const appConfig = configs?.[0] || {
-    appName: 'Banca Digital',
-    primaryColor: '#0B63FF',
-    secondaryColor: '#0A4DB6'
+    appName: 'Bancop',
+    primaryColor: '#1565C0',
+    secondaryColor: '#0D47A1'
   };
 
   // Apply Favicon and Title
