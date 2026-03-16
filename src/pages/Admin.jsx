@@ -69,7 +69,7 @@ export default function Admin() {
 
   const { data: baseUsers = [] } = useQuery({
     queryKey: ['baseUsers'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
+    queryFn: () => base44.entities.User.list(),
   });
 
   const linkUserMutation = useMutation({
