@@ -282,88 +282,132 @@ export default function Admin() {
 
         {/* Linking Tab */}
         <TabsContent value="linking">
-           <Card className="bg-white border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle>Homologación de Identidades</CardTitle>
-              <p className="text-sm text-slate-500">Vincular usuarios del sistema (Auth) con perfiles de negocio (AppUser)</p>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-slate-50">
-                    <TableHead>Perfil de Negocio (AppUser)</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Usuario de Sistema (Auth)</TableHead>
-                    <TableHead>Acción</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {appUsers.map((appUser) => {
-                    const linkedBaseUser = baseUsers.find(bu => bu.id === appUser.user_id);
-                    return (
-                      <TableRow key={appUser.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                             <Avatar className="h-8 w-8">
-                                <AvatarImage src={appUser.avatar_url} />
-                                <AvatarFallback>{appUser.full_name?.[0]}</AvatarFallback>
-                             </Avatar>
-                             <div>
-                               <p className="font-medium">{appUser.full_name}</p>
-                               <p className="text-xs text-slate-500">{appUser.email}</p>
-                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {appUser.user_id ? (
-                             <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Vinculado</Badge>
-                          ) : (
-                             <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">No vinculado</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {linkedBaseUser ? (
-                            <div className="flex items-center gap-2">
-                               <div className="h-2 w-2 rounded-full bg-green-500" />
-                               <span className="text-sm">{linkedBaseUser.email}</span>
-                               <span className="text-xs text-slate-400">({linkedBaseUser.role})</span>
+           <div className="space-y-6">
+             {/* Usuarios Huérfanos de Base44 */}
+             <Card className="bg-white border-0 shadow-sm border-l-4 border-l-amber-500">
+               <CardHeader>
+                 <CardTitle className="flex items-center gap-2">
+                   <span className="text-amber-600">⚠</span>
+                   Usuarios del Sistema Sin Perfil de Negocio
+                 </CardTitle>
+                 <p className="text-sm text-slate-500">Estos usuarios están registrados en el sistema pero no tienen perfil de negocio (AppUser). Crea su perfil para homologarlos.</p>
+               </CardHeader>
+               <CardContent>
+                 {(() => {
+                   const orphanUsers = baseUsers.filter(bu => !appUsers.find(au => au.user_id === bu.id));
+                   if (orphanUsers.length === 0) {
+                     return <div className="text-center py-8 text-slate-500">✅ Todos los usuarios están homologados</div>;
+                   }
+                   return (
+                     <div className="space-y-2">
+                       {orphanUsers.map((user) => (
+                         <div key={user.id} className="flex items-center justify-between p-4 rounded-lg bg-amber-50 border border-amber-200">
+                           <div className="flex-1">
+                             <p className="font-medium text-slate-900">{user.full_name}</p>
+                             <p className="text-sm text-slate-500">{user.email} · rol: {user.role}</p>
+                           </div>
+                           <Button
+                             onClick={() => {
+                               setSelectedBaseUser(user);
+                               setShowCreateDialog(true);
+                             }}
+                             className="bg-amber-600 hover:bg-amber-700"
+                             size="sm"
+                           >
+                             Crear Perfil
+                           </Button>
+                         </div>
+                       ))}
+                     </div>
+                   );
+                 })()}
+               </CardContent>
+             </Card>
+
+             {/* AppUsers Existentes */}
+             <Card className="bg-white border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle>Perfiles de Negocio Vinculados</CardTitle>
+                <p className="text-sm text-slate-500">AppUsers ya creados y su estado de vinculación</p>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-50">
+                      <TableHead>Perfil de Negocio (AppUser)</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Usuario de Sistema (Auth)</TableHead>
+                      <TableHead>Acción</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {appUsers.map((appUser) => {
+                      const linkedBaseUser = baseUsers.find(bu => bu.id === appUser.user_id);
+                      return (
+                        <TableRow key={appUser.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                               <Avatar className="h-8 w-8">
+                                  <AvatarImage src={appUser.avatar_url} />
+                                  <AvatarFallback>{appUser.full_name?.[0]}</AvatarFallback>
+                               </Avatar>
+                               <div>
+                                 <p className="font-medium">{appUser.full_name}</p>
+                                 <p className="text-xs text-slate-500">{appUser.email}</p>
+                               </div>
                             </div>
-                          ) : (
-                            <Select onValueChange={(val) => linkUserMutation.mutate({ appUserId: appUser.id, baseUserId: val })}>
-                              <SelectTrigger className="w-[250px] h-8">
-                                <SelectValue placeholder="Seleccionar usuario auth..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {baseUsers
-                                  .filter(bu => !appUsers.find(au => au.user_id === bu.id)) // Filter out already linked users
-                                  .map(bu => (
-                                    <SelectItem key={bu.id} value={bu.id}>
-                                      {bu.email} ({bu.full_name})
-                                    </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {appUser.user_id && (
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => linkUserMutation.mutate({ appUserId: appUser.id, baseUserId: null })}
-                            >
-                              Desvincular
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-           </Card>
+                          </TableCell>
+                          <TableCell>
+                            {appUser.user_id ? (
+                               <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Vinculado</Badge>
+                            ) : (
+                               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">No vinculado</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {linkedBaseUser ? (
+                              <div className="flex items-center gap-2">
+                                 <div className="h-2 w-2 rounded-full bg-green-500" />
+                                 <span className="text-sm">{linkedBaseUser.email}</span>
+                                 <span className="text-xs text-slate-400">({linkedBaseUser.role})</span>
+                              </div>
+                            ) : (
+                              <Select onValueChange={(val) => linkUserMutation.mutate({ appUserId: appUser.id, baseUserId: val })}>
+                                <SelectTrigger className="w-[250px] h-8">
+                                  <SelectValue placeholder="Seleccionar usuario auth..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {baseUsers
+                                    .filter(bu => !appUsers.find(au => au.user_id === bu.id))
+                                    .map(bu => (
+                                      <SelectItem key={bu.id} value={bu.id}>
+                                        {bu.email} ({bu.full_name})
+                                      </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {appUser.user_id && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => linkUserMutation.mutate({ appUserId: appUser.id, baseUserId: null })}
+                              >
+                                Desvincular
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+             </Card>
+           </div>
         </TabsContent>
 
         {/* Rules Tab */}
@@ -477,6 +521,26 @@ export default function Admin() {
             }}
             onCancel={() => setShowRuleDialog(false)}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Create AppUser Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crear Perfil de Negocio</DialogTitle>
+          </DialogHeader>
+          {selectedBaseUser && <CreateAppUserForm 
+            baseUser={selectedBaseUser}
+            onSuccess={() => {
+              setShowCreateDialog(false);
+              setSelectedBaseUser(null);
+            }}
+            onCancel={() => {
+              setShowCreateDialog(false);
+              setSelectedBaseUser(null);
+            }}
+          />}
         </DialogContent>
       </Dialog>
 
