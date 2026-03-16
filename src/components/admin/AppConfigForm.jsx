@@ -207,7 +207,7 @@ export default function AppConfigForm() {
             <Button 
                 type="submit" 
                 disabled={updateConfigMutation.isPending}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-[#1565C0] hover:bg-[#0D47A1]"
             >
                 {updateConfigMutation.isPending ? (
                     <>
