@@ -152,23 +152,27 @@ export default function Admin() {
 
       <Tabs defaultValue="config" className="space-y-4">
       <TabsList className="bg-white border p-1 flex-wrap h-auto">
-        <TabsTrigger value="config" className="gap-2">
-          <Palette className="h-4 w-4" />
-          Configuración Global
-        </TabsTrigger>
-        <TabsTrigger value="users" className="gap-2">
-          <Users className="h-4 w-4" />
-          Personal (AppUsers)
-        </TabsTrigger>
-          <TabsTrigger value="linking" className="gap-2">
-            <CheckCircle className="h-4 w-4" />
-            Homologación
-          </TabsTrigger>
-          <TabsTrigger value="rules" className="gap-2">
-            <Zap className="h-4 w-4" />
-            Reglas de Negocio
-          </TabsTrigger>
-        </TabsList>
+       <TabsTrigger value="config" className="gap-2">
+         <Palette className="h-4 w-4" />
+         Configuración Global
+       </TabsTrigger>
+       <TabsTrigger value="users" className="gap-2">
+         <Users className="h-4 w-4" />
+         Personal (AppUsers)
+       </TabsTrigger>
+         <TabsTrigger value="linking" className="gap-2">
+           <CheckCircle className="h-4 w-4" />
+           Homologación
+         </TabsTrigger>
+         <TabsTrigger value="rules" className="gap-2">
+           <Zap className="h-4 w-4" />
+           Reglas de Negocio
+         </TabsTrigger>
+         <TabsTrigger value="debug" className="gap-2">
+           <Settings className="h-4 w-4" />
+           Debug
+         </TabsTrigger>
+       </TabsList>
 
         {/* Config Tab */}
         <TabsContent value="config">
@@ -609,6 +613,105 @@ export default function Admin() {
             </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function DebugUserSearch({ baseUsers, appUsers }) {
+  const [searchEmail, setSearchEmail] = useState('');
+  const [result, setResult] = useState(null);
+
+  const handleSearch = (email) => {
+    if (!email.trim()) {
+      setResult(null);
+      return;
+    }
+    
+    const baseUser = baseUsers.find(u => u.email.toLowerCase().includes(email.toLowerCase()));
+    const appUser = appUsers.find(u => u.email.toLowerCase().includes(email.toLowerCase()));
+    
+    setResult({
+      baseUser,
+      appUser,
+      isLinked: baseUser && appUser?.user_id === baseUser.id
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <Input
+        placeholder="Ej: equipoiconconsulting@gmail.com"
+        value={searchEmail}
+        onChange={(e) => {
+          setSearchEmail(e.target.value);
+          handleSearch(e.target.value);
+        }}
+      />
+      
+      {result && (
+        <div className="space-y-4">
+          {/* Base44 Auth */}
+          <div className="p-4 rounded-lg border bg-blue-50 border-blue-200">
+            <p className="text-sm font-semibold text-blue-900 mb-2">Base44 Auth</p>
+            {result.baseUser ? (
+              <div className="space-y-1 text-sm">
+                <p><span className="font-medium">Email:</span> {result.baseUser.email}</p>
+                <p><span className="font-medium">Nombre:</span> {result.baseUser.full_name}</p>
+                <p><span className="font-medium">Rol:</span> <Badge className="bg-blue-100 text-blue-700">{result.baseUser.role}</Badge></p>
+                <p><span className="font-medium">ID:</span> <code className="text-xs bg-white px-2 py-1 rounded">{result.baseUser.id}</code></p>
+              </div>
+            ) : (
+              <p className="text-sm text-blue-700">❌ No encontrado en Base44 Auth</p>
+            )}
+          </div>
+
+          {/* AppUser */}
+          <div className="p-4 rounded-lg border bg-purple-50 border-purple-200">
+            <p className="text-sm font-semibold text-purple-900 mb-2">AppUser (Perfil de Negocio)</p>
+            {result.appUser ? (
+              <div className="space-y-1 text-sm">
+                <p><span className="font-medium">Email:</span> {result.appUser.email}</p>
+                <p><span className="font-medium">Nombre:</span> {result.appUser.full_name}</p>
+                <p><span className="font-medium">Rol:</span> <Badge className="bg-purple-100 text-purple-700">{result.appUser.role}</Badge></p>
+                <p><span className="font-medium">Cargo:</span> {result.appUser.position}</p>
+                <p><span className="font-medium">user_id vinculado:</span> {result.appUser.user_id ? <code className="text-xs bg-white px-2 py-1 rounded">{result.appUser.user_id}</code> : <span className="text-red-600">No vinculado</span>}</p>
+              </div>
+            ) : (
+              <p className="text-sm text-purple-700">❌ No encontrado en AppUser</p>
+            )}
+          </div>
+
+          {/* Status */}
+          <div className="p-4 rounded-lg border">
+            {result.baseUser && result.appUser && result.isLinked ? (
+              <div className="flex items-center gap-2 text-green-700">
+                <CheckCircle className="h-5 w-5" />
+                <p className="font-medium">✅ Usuario completamente homologado y vinculado</p>
+              </div>
+            ) : result.baseUser && result.appUser && !result.isLinked ? (
+              <div className="flex items-center gap-2 text-amber-700">
+                <AlertCircle className="h-5 w-5" />
+                <p className="font-medium">⚠️ Usuario existe en ambos sistemas pero NO está vinculado</p>
+              </div>
+            ) : result.baseUser && !result.appUser ? (
+              <div className="flex items-center gap-2 text-amber-700">
+                <AlertCircle className="h-5 w-5" />
+                <p className="font-medium">⚠️ Usuario existe en Auth pero SIN AppUser (huérfano)</p>
+              </div>
+            ) : !result.baseUser && result.appUser ? (
+              <div className="flex items-center gap-2 text-red-700">
+                <XCircle className="h-5 w-5" />
+                <p className="font-medium">❌ Usuario existe en AppUser pero NO en Base44 Auth</p>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-slate-600">
+                <XCircle className="h-5 w-5" />
+                <p className="font-medium">❌ Usuario no encontrado en el sistema</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
