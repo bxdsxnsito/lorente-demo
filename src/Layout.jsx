@@ -150,7 +150,7 @@ export default function Layout({ children, currentPageName }) {
         )}
         onClick={() => setMobileMenuOpen(false)}
       >
-        <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-white" : "text-blue-200 group-hover:text-white")} />
+        <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-orange-300" : "text-blue-200 group-hover:text-white")} />
         {!collapsed && <span className="truncate">{item.name}</span>}
       </Link>
     );
