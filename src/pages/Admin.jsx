@@ -607,6 +607,109 @@ export default function Admin() {
   );
 }
 
+function CreateAppUserForm({ baseUser, onSuccess, onCancel }) {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: baseUser?.email || '',
+    full_name: baseUser?.full_name || '',
+    user_id: baseUser?.id || '',
+    role: baseUser?.role === 'admin' ? 'admin' : 'user',
+    position: 'oficial',
+    department: '',
+    branch: '',
+    supervisor_id: '',
+    phone: '',
+    avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${baseUser?.full_name}`,
+    status: 'active',
+    specialty: 'general',
+    monthly_budget: 50000,
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      await base44.entities.AppUser.create(formData);
+      toast.success('Perfil de negocio creado y vinculado');
+      onSuccess();
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al crear perfil');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+        <p className="text-sm font-medium text-blue-900">{baseUser?.full_name}</p>
+        <p className="text-xs text-blue-700">{baseUser?.email} ({baseUser?.role})</p>
+      </div>
+      
+      <div className="space-y-2">
+        <Label>Cargo *</Label>
+        <Select value={formData.position} onValueChange={(v) => setFormData({...formData, position: v})}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="oficial">Oficial de Negocios</SelectItem>
+            <SelectItem value="supervisor">Supervisor</SelectItem>
+            <SelectItem value="gerente">Gerente Comercial</SelectItem>
+            <SelectItem value="admin">Administrador</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Sucursal / Agencia *</Label>
+        <Input
+          value={formData.branch}
+          onChange={(e) => setFormData({...formData, branch: e.target.value})}
+          placeholder="Ej: San Isidro"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Departamento *</Label>
+        <Input
+          value={formData.department}
+          onChange={(e) => setFormData({...formData, department: e.target.value})}
+          placeholder="Ej: Banca Personas"
+          required
+        />
+      </div>
+
+      {formData.position === 'oficial' && (
+        <div className="space-y-2">
+          <Label>Presupuesto Mensual ($)</Label>
+          <Input
+            type="number"
+            value={formData.monthly_budget}
+            onChange={(e) => setFormData({...formData, monthly_budget: parseFloat(e.target.value)})}
+          />
+        </div>
+      )}
+
+      <DialogFooter>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
+          Cancelar
+        </Button>
+        <Button 
+          type="submit" 
+          className="bg-[#0B63FF] hover:bg-[#0A4DB6]"
+          disabled={loading}
+        >
+          {loading ? 'Creando...' : 'Crear y Vincular'}
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+}
+
 function RuleForm({ rule, onSuccess, onCancel }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
