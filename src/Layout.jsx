@@ -184,7 +184,7 @@ export default function Layout({ children, currentPageName }) {
           </Button>
           <div className="flex items-center gap-2">
             {appConfig.logoUrl ? (
-                <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
+                <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />
             ) : (
                 <Building2 className="h-7 w-7 text-white" />
             )}
@@ -228,9 +228,9 @@ export default function Layout({ children, currentPageName }) {
           collapsed ? "justify-center px-2" : "px-6"
         )}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden">
+            <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden">
                 {appConfig.logoUrl ? (
-                    <img src={appConfig.logoUrl} alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
+                    <img src={appConfig.logoUrl} alt="Logo" className="h-10 w-10 object-contain" />
                 ) : (
                     <Building2 className="h-6 w-6 text-white" />
                 )}
