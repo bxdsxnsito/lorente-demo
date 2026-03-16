@@ -83,16 +83,6 @@ export default function Admin() {
     },
   });
 
-  const createAppUserMutation = useMutation({
-    mutationFn: (data) => base44.entities.AppUser.create(data),
-    onSuccess: () => {
-      refetchAppUsers();
-      toast.success('AppUser creado y vinculado correctamente');
-      setShowCreateDialog(false);
-      setSelectedBaseUser(null);
-    },
-  });
-
   const updateAppUserMutation = useMutation({
     mutationFn: ({ appUserId, data }) => base44.entities.AppUser.update(appUserId, data),
     onSuccess: () => {
