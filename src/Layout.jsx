@@ -236,7 +236,7 @@ export default function Layout({ children, currentPageName }) {
             {!collapsed && (
               <div>
                 <h1 className="text-white font-bold text-lg leading-tight">{appConfig.appName}</h1>
-                <p className="text-blue-200 text-xs">Agenda Comercial</p>
+                <p className="text-blue-200 text-xs">Crece desde la raíz</p>
               </div>
             )}
           </div>
