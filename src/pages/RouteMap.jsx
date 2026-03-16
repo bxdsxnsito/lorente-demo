@@ -33,14 +33,13 @@ export default function RouteMap() {
     enabled: !!currentUser,
   });
 
-  // Cargar TODAS las actividades del oficial (sin filtro de fecha en BD, filtramos en cliente)
+  // Cargar actividades: si tiene AppUser usa su id, sino usa el id base44 directo
+  const officialId = appUser?.id ?? currentUser?.id;
+
   const { data: activities = [], isLoading: loadingActivities } = useQuery({
-    queryKey: ['activities-routemap', appUser?.id],
-    queryFn: async () => {
-      if (!appUser) return [];
-      return base44.entities.Activity.filter({ official_id: appUser.id });
-    },
-    enabled: !!appUser,
+    queryKey: ['activities-routemap', officialId],
+    queryFn: () => base44.entities.Activity.filter({ official_id: officialId }),
+    enabled: !!officialId,
   });
 
   // Cargar todos los clientes
