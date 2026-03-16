@@ -3,10 +3,11 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { format, isSameDay, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { MapPin, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Calendar, ChevronLeft, ChevronRight, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import RouteVisitList from '@/components/routemap/RouteVisitList';
 import RouteMapView from '@/components/routemap/RouteMapView';
 
@@ -14,6 +15,7 @@ export default function RouteMap() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedVisit, setSelectedVisit] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [selectedOfficialId, setSelectedOfficialId] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -23,23 +25,33 @@ export default function RouteMap() {
     load();
   }, []);
 
-  // Cargar AppUser vinculado al usuario actual
-  const { data: appUser } = useQuery({
-    queryKey: ['appuser-routemap', currentUser?.id],
-    queryFn: async () => {
-      const appUsers = await base44.entities.AppUser.list();
-      return appUsers.find(au => au.user_id === currentUser.id || au.email === currentUser.email) || null;
-    },
+  // Cargar todos los AppUsers
+  const { data: allAppUsers = [] } = useQuery({
+    queryKey: ['appusers-routemap'],
+    queryFn: () => base44.entities.AppUser.list(),
     enabled: !!currentUser,
   });
 
-  // Cargar actividades: si tiene AppUser usa su id, sino usa el id base44 directo
-  const officialId = appUser?.id ?? currentUser?.id;
+  // AppUser del usuario actual
+  const appUser = allAppUsers.find(au => au.user_id === currentUser?.id || au.email === currentUser?.email) || null;
+
+  // ¿Es admin/supervisor/gerente?
+  const isAdmin = currentUser?.role === 'admin' || ['admin', 'supervisor', 'gerente'].includes(appUser?.position);
+
+  // Oficiales disponibles para el selector (solo si es admin)
+  const officials = allAppUsers.filter(au => au.position === 'oficial');
+
+  // ID efectivo: si es admin y hay selección → esa; si es admin sin selección → null (todas); si no es admin → su propio id
+  const effectiveOfficialId = isAdmin
+    ? (selectedOfficialId === 'all' || selectedOfficialId === null ? null : selectedOfficialId)
+    : (appUser?.id ?? currentUser?.id);
 
   const { data: activities = [], isLoading: loadingActivities } = useQuery({
-    queryKey: ['activities-routemap', officialId],
-    queryFn: () => base44.entities.Activity.filter({ official_id: officialId }),
-    enabled: !!officialId,
+    queryKey: ['activities-routemap', effectiveOfficialId, isAdmin],
+    queryFn: () => effectiveOfficialId
+      ? base44.entities.Activity.filter({ official_id: effectiveOfficialId })
+      : base44.entities.Activity.list(),
+    enabled: !!currentUser && (isAdmin || !!effectiveOfficialId),
   });
 
   // Cargar todos los clientes
