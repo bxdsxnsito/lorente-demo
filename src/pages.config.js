@@ -13,6 +13,7 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import ProductSimulator from './pages/ProductSimulator';
 import AIAnalysis from './pages/AIAnalysis';
+import RouteMap from './pages/RouteMap';
 import __Layout from './Layout.jsx';
 
 
