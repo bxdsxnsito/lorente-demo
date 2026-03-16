@@ -12,11 +12,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 export default function AppConfigForm() {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
-    appName: 'Banca Digital',
+    appName: 'Bancop',
     logoUrl: '',
     faviconUrl: '',
-    primaryColor: '#0B63FF',
-    secondaryColor: '#0A4DB6',
+    primaryColor: '#1565C0',
+    secondaryColor: '#0D47A1',
     isActive: true
   });
 
