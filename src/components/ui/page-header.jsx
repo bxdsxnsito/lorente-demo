@@ -12,7 +12,7 @@ export function PageHeader({
     <div className={cn("flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6", className)}>
       <div className="flex items-center gap-4">
         {Icon && (
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#0B63FF] to-[#0A4DB6] flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#1565C0] to-[#0D47A1] flex items-center justify-center shadow-lg shadow-blue-900/20">
             <Icon className="h-6 w-6 text-white" />
           </div>
         )}
