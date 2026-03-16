@@ -145,7 +145,7 @@ export default function Layout({ children, currentPageName }) {
         className={cn(
           "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
           isActive 
-            ? "bg-white/15 text-white font-medium shadow-lg shadow-blue-900/20" 
+            ? "bg-white/20 text-white font-semibold shadow-lg border-l-4 border-orange-400" 
             : "text-blue-100 hover:bg-white/10 hover:text-white"
         )}
         onClick={() => setMobileMenuOpen(false)}
