@@ -184,9 +184,7 @@ export default function Layout({ children, currentPageName }) {
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           <div className="flex items-center gap-2">
-            <div className="flex-shrink-0 flex items-center justify-center">
-              <BancopLogo size={36} />
-            </div>
+            <BancopLogo size={32} />
             <span className="text-white font-bold text-lg">{appConfig.appName}</span>
           </div>
         </div>
@@ -227,8 +225,8 @@ export default function Layout({ children, currentPageName }) {
           collapsed ? "justify-center px-2" : "px-6"
         )}>
           <div className="flex items-center gap-3">
-            <div className="flex-shrink-0 flex items-center justify-center">
-              <BancopLogo size={40} />
+            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center overflow-hidden">
+                <BancopLogo size={36} />
             </div>
             {!collapsed && (
               <div>
