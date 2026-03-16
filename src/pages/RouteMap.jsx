@@ -100,6 +100,26 @@ export default function RouteMap() {
         title="Ruta del Día"
         subtitle="Visitas programadas y recorrido del día"
       >
+        {/* Selector de oficial (solo admins/supervisores) */}
+        {isAdmin && officials.length > 0 && (
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-slate-500" />
+            <Select
+              value={selectedOfficialId ?? 'all'}
+              onValueChange={(val) => { setSelectedOfficialId(val === 'all' ? null : val); setSelectedVisit(null); }}
+            >
+              <SelectTrigger className="w-48 h-9 text-sm">
+                <SelectValue placeholder="Todos los oficiales" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los oficiales</SelectItem>
+                {officials.map(o => (
+                  <SelectItem key={o.id} value={o.id}>{o.full_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         {/* Selector de fecha */}
         <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm">
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => changeDay(-1)}>
