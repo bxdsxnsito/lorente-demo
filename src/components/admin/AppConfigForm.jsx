@@ -32,11 +32,11 @@ export default function AppConfigForm() {
       const config = configs[0];
       setFormData({
         id: config.id,
-        appName: config.appName || 'Banca Digital',
+        appName: config.appName || 'Bancop',
         logoUrl: config.logoUrl || '',
         faviconUrl: config.faviconUrl || '',
-        primaryColor: config.primaryColor || '#0B63FF',
-        secondaryColor: config.secondaryColor || '#0A4DB6',
+        primaryColor: config.primaryColor || '#1565C0',
+        secondaryColor: config.secondaryColor || '#0D47A1',
         isActive: config.isActive ?? true
       });
     }
