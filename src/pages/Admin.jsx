@@ -72,11 +72,24 @@ export default function Admin() {
     queryFn: () => base44.entities.User.list(),
   });
 
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedBaseUser, setSelectedBaseUser] = useState(null);
+
   const linkUserMutation = useMutation({
     mutationFn: ({ appUserId, baseUserId }) => base44.entities.AppUser.update(appUserId, { user_id: baseUserId }),
     onSuccess: () => {
       refetchAppUsers();
       toast.success('Usuario vinculado correctamente');
+    },
+  });
+
+  const createAppUserMutation = useMutation({
+    mutationFn: (data) => base44.entities.AppUser.create(data),
+    onSuccess: () => {
+      refetchAppUsers();
+      toast.success('AppUser creado y vinculado correctamente');
+      setShowCreateDialog(false);
+      setSelectedBaseUser(null);
     },
   });
 
