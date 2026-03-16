@@ -1,8 +1,9 @@
 import React from 'react';
 
 /**
- * Logo de Bancop: tres pétalos en pinwheel (naranja, azul, verde)
- * Igual al logo original con hojas/pétalos superpuestos
+ * Logo Bancop: hoja estilizada con una planta brotando desde la base.
+ * Inspirado en el logo original "Crece desde la raíz".
+ * SVG perfectamente centrado en su viewBox.
  */
 export default function BancopLogo({ size = 32, className = '' }) {
   return (
@@ -14,26 +15,52 @@ export default function BancopLogo({ size = 32, className = '' }) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Pétalo naranja - arriba izquierda */}
+      {/* Fondo redondeado verde-teal */}
+      <rect width="100" height="100" rx="22" fill="#0BA37F" />
+
+      {/* Hoja izquierda */}
       <path
-        d="M50 50 C30 35 15 20 20 5 C25 -5 45 0 55 15 C65 30 60 45 50 50Z"
-        fill="#F57C00"
+        d="M50 72 C50 72 20 65 18 42 C16 22 38 18 50 35 C50 35 50 72 50 72Z"
+        fill="white"
         opacity="0.95"
       />
-      {/* Pétalo azul - arriba derecha */}
+
+      {/* Hoja derecha */}
       <path
-        d="M50 50 C65 30 80 20 90 30 C100 42 88 60 72 62 C55 64 48 58 50 50Z"
-        fill="#1565C0"
-        opacity="0.95"
+        d="M50 72 C50 72 80 65 82 42 C84 22 62 18 50 35 C50 35 50 72 50 72Z"
+        fill="white"
+        opacity="0.75"
       />
-      {/* Pétalo verde - abajo */}
+
+      {/* Tallo central */}
+      <line
+        x1="50" y1="72"
+        x2="50" y2="85"
+        stroke="white"
+        strokeWidth="5"
+        strokeLinecap="round"
+        opacity="0.9"
+      />
+
+      {/* Raíz izquierda */}
       <path
-        d="M50 50 C55 70 52 90 40 95 C28 100 15 88 20 73 C25 58 38 52 50 50Z"
-        fill="#4CAF50"
-        opacity="0.95"
+        d="M50 85 Q38 85 32 90"
+        stroke="white"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.8"
       />
-      {/* Centro blanco para unificar */}
-      <circle cx="50" cy="50" r="8" fill="white" opacity="0.6" />
+
+      {/* Raíz derecha */}
+      <path
+        d="M50 85 Q62 85 68 90"
+        stroke="white"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.8"
+      />
     </svg>
   );
 }
