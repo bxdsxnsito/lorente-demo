@@ -184,7 +184,9 @@ export default function Layout({ children, currentPageName }) {
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
           <div className="flex items-center gap-2">
-            <BancopLogo size={32} />
+            <div className="flex-shrink-0 flex items-center justify-center">
+              <BancopLogo size={36} />
+            </div>
             <span className="text-white font-bold text-lg">{appConfig.appName}</span>
           </div>
         </div>
