@@ -33,6 +33,7 @@ export const PAGES = {
     "Settings": Settings,
     "ProductSimulator": ProductSimulator,
     "AIAnalysis": AIAnalysis,
+    "RouteMap": RouteMap,
 }
 
 export const pagesConfig = {

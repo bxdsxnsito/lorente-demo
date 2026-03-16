@@ -120,6 +120,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Tarjetas', icon: CreditCard, page: 'Cards' },
     { name: 'Productos', icon: Briefcase, page: 'Products' },
     { name: 'Simuladores', icon: Calculator, page: 'ProductSimulator' },
+    { name: 'Ruta del Día', icon: MapPin, page: 'RouteMap' },
   ];
 
   const supervisorMenuItems = [
