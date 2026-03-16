@@ -22,7 +22,8 @@ import {
   X,
   Bell,
   Calculator,
-  Brain
+  Brain,
+  MapPin
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
