@@ -103,6 +103,11 @@ export default function Client360() {
   const totalCreditUsed = (summary.total_credit_limit - summary.available_credit) || cards.reduce((sum, c) => sum + (c.used_amount || 0), 0);
   const totalLoans = summary.total_loans_outstanding || loans.reduce((sum, l) => sum + (l.outstanding_balance || 0), 0);
 
+  const { data: clients = [] } = useQuery({
+    queryKey: ['clients-list'],
+    queryFn: () => base44.entities.Client.list(),
+  });
+
   if (summaryLoading || !client) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -110,11 +115,6 @@ export default function Client360() {
       </div>
     );
   }
-
-  const { data: clients = [] } = useQuery({
-    queryKey: ['clients-list'],
-    queryFn: () => base44.entities.Client.list(),
-  });
 
   return (
     <>
