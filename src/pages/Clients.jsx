@@ -137,7 +137,7 @@ export default function Clients() {
         title="Clientes"
         subtitle="Gestión de cartera de clientes"
       >
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2" onClick={handleExport}>
           <Download className="h-4 w-4" />
           Exportar
         </Button>
