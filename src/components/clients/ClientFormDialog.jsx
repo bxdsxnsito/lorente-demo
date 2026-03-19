@@ -152,9 +152,13 @@ export default function ClientFormDialog({ open, onOpenChange, client, onSuccess
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="retail">Retail</SelectItem>
-                  <SelectItem value="pyme">PYME</SelectItem>
-                  <SelectItem value="corporativo">Corporativo</SelectItem>
+                  <SelectItem value="com_mayor">Com. Mayor</SelectItem>
+                  <SelectItem value="com_mayor_vin">Com. Mayor Vin.</SelectItem>
+                  <SelectItem value="com_menor">Com. Menor</SelectItem>
+                  <SelectItem value="gd_com">GD Com.</SelectItem>
+                  <SelectItem value="microcredito">Microcrédito</SelectItem>
+                  <SelectItem value="personal_consumo">Personal Consumo</SelectItem>
+                  <SelectItem value="personal_vivienda">Personal Vivienda</SelectItem>
                 </SelectContent>
               </Select>
             </div>
