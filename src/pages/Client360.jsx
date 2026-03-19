@@ -124,11 +124,11 @@ export default function Client360() {
           <h1 className="text-2xl font-bold text-slate-900">Vista 360° del Cliente</h1>
           <p className="text-slate-500">Información consolidada (simulado)</p>
         </div>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2" onClick={() => setShowEditClient(true)}>
           <Edit className="h-4 w-4" />
           Editar
         </Button>
-        <Button className="bg-[#0B63FF] hover:bg-[#0A4DB6] gap-2">
+        <Button className="bg-[#0B63FF] hover:bg-[#0A4DB6] gap-2" onClick={() => setShowNewActivity(true)}>
           <Plus className="h-4 w-4" />
           Nueva Actividad
         </Button>
