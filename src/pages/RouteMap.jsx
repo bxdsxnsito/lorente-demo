@@ -67,8 +67,13 @@ export default function RouteMap() {
 
   // Filtrar visitas del día seleccionado y ordenar por route_order / scheduled_at
   const visitsOfDay = React.useMemo(() => {
+    const selDateStr = format(selectedDate, 'yyyy-MM-dd');
     return activities
-      .filter(a => isSameDay(parseISO(a.scheduled_at), selectedDate))
+      .filter(a => {
+        // Comparar solo la parte de fecha (YYYY-MM-DD) para evitar problemas de timezone
+        const actDateStr = a.scheduled_at?.substring(0, 10);
+        return actDateStr === selDateStr;
+      })
       .sort((a, b) => {
         if (a.route_order != null && b.route_order != null) return a.route_order - b.route_order;
         return new Date(a.scheduled_at) - new Date(b.scheduled_at);
