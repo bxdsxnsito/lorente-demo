@@ -43,6 +43,8 @@ import {
 import RiskBadge from '@/components/common/RiskBadge';
 import SegmentBadge from '@/components/common/SegmentBadge';
 import StatusBadge from '@/components/common/StatusBadge';
+import ClientFormDialog from '@/components/clients/ClientFormDialog';
+import ActivityFormDialog from '@/components/agenda/ActivityFormDialog';
 import moment from 'moment';
 
 export default function Client360() {
