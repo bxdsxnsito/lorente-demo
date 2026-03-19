@@ -111,7 +111,26 @@ export default function Client360() {
     );
   }
 
+  const { data: clients = [] } = useQuery({
+    queryKey: ['clients-list'],
+    queryFn: () => base44.entities.Client.list(),
+  });
+
   return (
+    <>
+    <ClientFormDialog
+      open={showEditClient}
+      onOpenChange={setShowEditClient}
+      client={client}
+      onSuccess={() => {}}
+    />
+    <ActivityFormDialog
+      open={showNewActivity}
+      onOpenChange={setShowNewActivity}
+      activity={null}
+      clients={clients}
+      onSuccess={() => {}}
+    />
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
