@@ -50,6 +50,8 @@ import moment from 'moment';
 export default function Client360() {
   const urlParams = new URLSearchParams(window.location.search);
   const clientId = urlParams.get('id');
+  const [showEditClient, setShowEditClient] = useState(false);
+  const [showNewActivity, setShowNewActivity] = useState(false);
 
   // Use backend function to get consolidated client data
   const { data: clientSummary, isLoading: summaryLoading } = useQuery({
