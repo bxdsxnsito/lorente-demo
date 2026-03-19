@@ -46,6 +46,7 @@ import StatusBadge from '@/components/common/StatusBadge';
 import ActivityFormDialog from '@/components/agenda/ActivityFormDialog';
 import CheckinDialog from '@/components/agenda/CheckinDialog';
 import RulesEvaluationDialog from '@/components/agenda/RulesEvaluationDialog';
+import CalendarView from '@/components/agenda/CalendarView';
 import moment from 'moment';
 
 export default function Agenda() {
