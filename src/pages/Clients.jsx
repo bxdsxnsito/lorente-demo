@@ -96,6 +96,40 @@ export default function Clients() {
     return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'USD' }).format(value || 0);
   };
 
+  const handleExport = () => {
+    const segmentLabels = {
+      corp_agricola: 'Corp. Agrícola', corp_com_ind_serv: 'Corp. Com/Ind/Serv',
+      corp_ganadero: 'Corp. Ganadero', inv_ifis: 'IFIs',
+      inv_institucional: 'Inv. Institucional', inv_personal: 'Inv. Personal',
+      personas_consumo: 'Personas Consumo', pyme_agricola: 'Pyme Agrícola',
+      pyme_com_ind_serv: 'Pyme Com/Ind/Serv', pyme_ganadera: 'Pyme Ganadera',
+      sin_productos: 'Sin Productos',
+    };
+    const typeLabels = {
+      com_mayor: 'Com. Mayor', com_mayor_vin: 'Com. Mayor Vin.', com_menor: 'Com. Menor',
+      gd_com: 'GD Com.', microcredito: 'Microcrédito',
+      personal_consumo: 'Personal Consumo', personal_vivienda: 'Personal Vivienda',
+    };
+    const rows = filteredClients.map(c => ({
+      'Nombre': c.name || '',
+      'Documento': c.document || '',
+      'Tipo Documento': c.document_type || '',
+      'Tipo Cliente': typeLabels[c.client_type] || c.client_type || '',
+      'Segmento': segmentLabels[c.segment] || c.segment || '',
+      'Score Riesgo': c.risk_score ?? '',
+      'Email': c.email || '',
+      'Teléfono': c.phone || '',
+      'Dirección': c.address || '',
+      'Ocupación': c.occupation || '',
+      'Ingreso Mensual': c.monthly_income ?? '',
+      'Estado': c.status || '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
+    XLSX.writeFile(wb, `clientes_${new Date().toISOString().slice(0,10)}.xlsx`);
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader 
