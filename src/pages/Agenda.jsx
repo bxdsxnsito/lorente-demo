@@ -418,6 +418,14 @@ export default function Agenda() {
         </Card>
       </div>
 
+      {/* Calendar View */}
+      {view === 'calendar' && (
+        <CalendarView
+          activities={filteredActivities}
+          onSelectActivity={(activity) => { setSelectedActivity(activity); setShowForm(true); }}
+        />
+      )}
+
       {/* Activities List */}
       {view === 'list' && (
         <div className="space-y-6">
