@@ -129,26 +129,37 @@ export default function Clients() {
           </div>
           <div className="flex gap-3">
             <Select value={segmentFilter} onValueChange={setSegmentFilter}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Segmento" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="normal">Normal</SelectItem>
-                <SelectItem value="preferente">Preferente</SelectItem>
-                <SelectItem value="premium">Premium</SelectItem>
-                <SelectItem value="pyme">PYME</SelectItem>
+                <SelectItem value="all">Todos los segmentos</SelectItem>
+                <SelectItem value="corp_agricola">Corp. Agrícola</SelectItem>
+                <SelectItem value="corp_com_ind_serv">Corp. Com/Ind/Serv</SelectItem>
+                <SelectItem value="corp_ganadero">Corp. Ganadero</SelectItem>
+                <SelectItem value="inv_ifis">IFIs</SelectItem>
+                <SelectItem value="inv_institucional">Inv. Institucional</SelectItem>
+                <SelectItem value="inv_personal">Inv. Personal</SelectItem>
+                <SelectItem value="personas_consumo">Personas Consumo</SelectItem>
+                <SelectItem value="pyme_agricola">Pyme Agrícola</SelectItem>
+                <SelectItem value="pyme_com_ind_serv">Pyme Com/Ind/Serv</SelectItem>
+                <SelectItem value="pyme_ganadera">Pyme Ganadera</SelectItem>
+                <SelectItem value="sin_productos">Sin Productos</SelectItem>
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="retail">Retail</SelectItem>
-                <SelectItem value="pyme">PYME</SelectItem>
-                <SelectItem value="corporativo">Corporativo</SelectItem>
+                <SelectItem value="all">Todos los tipos</SelectItem>
+                <SelectItem value="com_mayor">Com. Mayor</SelectItem>
+                <SelectItem value="com_mayor_vin">Com. Mayor Vin.</SelectItem>
+                <SelectItem value="com_menor">Com. Menor</SelectItem>
+                <SelectItem value="gd_com">GD Com.</SelectItem>
+                <SelectItem value="microcredito">Microcrédito</SelectItem>
+                <SelectItem value="personal_consumo">Personal Consumo</SelectItem>
+                <SelectItem value="personal_vivienda">Personal Vivienda</SelectItem>
               </SelectContent>
             </Select>
           </div>
