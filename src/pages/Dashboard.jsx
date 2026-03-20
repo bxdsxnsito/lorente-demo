@@ -335,7 +335,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 [&>*:first-child]:sm:col-span-2 [&>*:first-child]:lg:col-span-4">
         {/* Avance de Colocaciones - ocupa toda la fila */}
         <div className="sm:col-span-2 lg:col-span-4 bg-white rounded-2xl p-5 shadow-sm border-0">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Avance de Colocaciones a Hoy</p>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">AVANCE DE META A HOY</p>
           <div className="flex justify-between text-sm mb-2">
             <span className="text-blue-600 font-bold text-lg">20% ejecutado</span>
             <span className="text-slate-400 font-medium">100% presupuestado</span>
@@ -392,14 +392,10 @@ export default function Dashboard() {
 
       {/* Executive Performance */}
       <ExecutivePerformanceChart
-        executives={teamPerformanceData.map(e => ({
-          ...e,
-          cumplimiento: e.presupuesto > 0 ? Math.min(Math.round((e.ejecucion / e.presupuesto) * 100), 100) : 0,
-          appUser: appUsers.find(u => u.full_name?.split(' ')[0] === e.name),
-        }))}
+        executives={executivesData}
         onExecutiveClick={(exec) => {
           const found = appUsers.find(u => u.full_name?.split(' ')[0] === exec.name);
-          setSelectedExecutive(found || { full_name: exec.name, id: exec.name });
+          setSelectedExecutive(found || { full_name: exec.name, id: exec.name, position: 'oficial' });
         }}
       />
 
@@ -575,15 +571,6 @@ export default function Dashboard() {
           </div>
         </Card>
       </div>
-      {/* Executive Drilldown Modal */}
-      {selectedExecutive && (
-        <ExecutiveDrilldownModal
-          executive={selectedExecutive}
-          level={1}
-          appUsers={appUsers}
-          onClose={() => setSelectedExecutive(null)}
-        />
-      )}
     </div>
   );
 }
