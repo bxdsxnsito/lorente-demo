@@ -51,6 +51,7 @@ import ExecutiveDrilldownModal from '@/components/dashboard/ExecutiveDrilldownMo
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [selectedExecutive, setSelectedExecutive] = useState(null);
   const [filters, setFilters] = useState({
     period: 'month',
     official: 'all'
