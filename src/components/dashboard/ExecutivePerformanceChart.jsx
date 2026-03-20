@@ -1,4 +1,15 @@
 import React from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  ReferenceLine,
+} from 'recharts';
 import { Card } from '@/components/ui/card';
 import { TrendingUp } from 'lucide-react';
 
@@ -8,27 +19,39 @@ const getBarColor = (pct) => {
   return '#ef4444';
 };
 
-const formatCurrency = (v) => {
-  if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
-  if (v >= 1000) return `$${(v / 1000).toFixed(0)}K`;
-  return `$${v}`;
+const MOCK_DATA = [
+  { name: 'Carlos M.', presupuesto: 50000, ejecucion: 45000 },
+  { name: 'María R.',  presupuesto: 50000, ejecucion: 28000 },
+  { name: 'José P.',   presupuesto: 50000, ejecucion: 41500 },
+  { name: 'Ana G.',    presupuesto: 50000, ejecucion: 12000 },
+  { name: 'Luis T.',   presupuesto: 50000, ejecucion: 37000 },
+];
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  const pct = payload[0]?.payload?.cumplimiento;
+  const color = getBarColor(pct);
+  const exec = payload[0]?.payload;
+  const formatK = (v) => v >= 1000 ? `$${(v/1000).toFixed(0)}K` : `$${v}`;
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl shadow-lg p-3 text-sm min-w-[160px]">
+      <p className="font-semibold text-slate-800 mb-2">{label}</p>
+      <p style={{ color }} className="font-bold text-base">{pct}% cumplimiento</p>
+      <p className="text-slate-500 text-xs mt-1">
+        {formatK(exec?.ejecucion)} / {formatK(exec?.presupuesto)}
+      </p>
+    </div>
+  );
 };
 
 export default function ExecutivePerformanceChart({ executives = [], onExecutiveClick }) {
-  // Use real data if available (≥2), otherwise use mock
-  const MOCK = [
-    { name: 'Carlos M.', presupuesto: 50000, ejecucion: 45000 },
-    { name: 'María R.',  presupuesto: 50000, ejecucion: 28000 },
-    { name: 'José P.',   presupuesto: 50000, ejecucion: 41000 },
-    { name: 'Ana G.',    presupuesto: 50000, ejecucion: 12000 },
-    { name: 'Luis T.',   presupuesto: 50000, ejecucion: 37000 },
-  ];
-
-  const raw = executives.length >= 2 ? executives : MOCK;
+  const raw = executives.length >= 2 ? executives : MOCK_DATA;
 
   const data = raw.map(e => ({
     ...e,
-    pct: e.presupuesto > 0 ? Math.min(Math.round((e.ejecucion / e.presupuesto) * 100), 100) : 0,
+    cumplimiento: e.presupuesto > 0
+      ? Math.min(Math.round((e.ejecucion / e.presupuesto) * 100), 100)
+      : 0,
   }));
 
   return (
@@ -37,52 +60,63 @@ export default function ExecutivePerformanceChart({ executives = [], onExecutive
         <TrendingUp className="h-5 w-5 text-[#0B63FF]" />
         <h3 className="font-semibold text-slate-700">Desempeño Ejecutivo</h3>
       </div>
-      <p className="text-xs text-slate-400 mb-5">Haz clic en un ejecutivo para ver su dashboard individual</p>
+      <p className="text-xs text-slate-400 mb-5">
+        Haz clic en una barra para ver el dashboard individual del ejecutivo
+      </p>
 
-      {/* Custom horizontal bar chart */}
-      <div className="space-y-3">
-        {data.map((exec, i) => {
-          const color = getBarColor(exec.pct);
-          const pctDisplay = Math.max(exec.pct, 2); // minimum visible width
-          return (
-            <div
-              key={i}
-              className="cursor-pointer group"
-              onClick={() => onExecutiveClick && onExecutiveClick(exec)}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-slate-700 group-hover:text-blue-600 transition-colors">
-                  {exec.name}
-                </span>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400">
-                    {formatCurrency(exec.ejecucion)} / {formatCurrency(exec.presupuesto)}
-                  </span>
-                  <span className="text-sm font-bold w-10 text-right" style={{ color }}>
-                    {exec.pct}%
-                  </span>
-                </div>
-              </div>
-              {/* Track */}
-              <div className="w-full bg-slate-100 rounded-full h-5 relative overflow-hidden">
-                {/* Bar */}
-                <div
-                  className="h-5 rounded-full transition-all duration-500"
-                  style={{ width: `${pctDisplay}%`, backgroundColor: color }}
-                />
-                {/* 80% reference line */}
-                <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-slate-400 opacity-50"
-                  style={{ left: '80%' }}
-                />
-              </div>
-            </div>
-          );
-        })}
+      <div className="h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            barCategoryGap="30%"
+            margin={{ top: 10, right: 20, left: 0, bottom: 5 }}
+            onClick={(chartData) => {
+              if (chartData?.activePayload?.length > 0 && onExecutiveClick) {
+                onExecutiveClick(chartData.activePayload[0].payload);
+              }
+            }}
+            className="cursor-pointer"
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#475569', fontSize: 12, fontWeight: 500 }}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#94a3b8', fontSize: 12 }}
+              tickFormatter={(v) => `${v}%`}
+              domain={[0, 100]}
+              ticks={[0, 20, 40, 60, 80, 100]}
+              label={{
+                value: 'Cumplimiento',
+                angle: -90,
+                position: 'insideLeft',
+                offset: 10,
+                style: { fill: '#94a3b8', fontSize: 12 },
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(11,99,255,0.05)', radius: 4 }} />
+            <ReferenceLine
+              y={80}
+              stroke="#22c55e"
+              strokeDasharray="5 4"
+              strokeWidth={1.5}
+              label={{ value: 'Meta 80%', position: 'right', fontSize: 11, fill: '#22c55e' }}
+            />
+            <Bar dataKey="cumplimiento" radius={[6, 6, 0, 0]} name="Cumplimiento" minPointSize={4}>
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getBarColor(entry.cumplimiento)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
 
-      {/* Legend */}
-      <div className="flex gap-5 mt-5 text-xs text-slate-500 justify-center">
+      <div className="flex gap-5 mt-3 text-xs text-slate-500 justify-center">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-green-500 inline-block" /> ≥80% En meta
         </span>
@@ -91,9 +125,6 @@ export default function ExecutivePerformanceChart({ executives = [], onExecutive
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-full bg-red-500 inline-block" /> &lt;50% Crítico
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-0.5 h-4 bg-slate-400 inline-block opacity-50" /> Meta 80%
         </span>
       </div>
     </Card>
