@@ -390,6 +390,19 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Executive Performance */}
+      <ExecutivePerformanceChart
+        executives={teamPerformanceData.map(e => ({
+          ...e,
+          cumplimiento: e.presupuesto > 0 ? Math.min(Math.round((e.ejecucion / e.presupuesto) * 100), 100) : 0,
+          appUser: appUsers.find(u => u.full_name?.split(' ')[0] === e.name),
+        }))}
+        onExecutiveClick={(exec) => {
+          const found = appUsers.find(u => u.full_name?.split(' ')[0] === exec.name);
+          setSelectedExecutive(found || { full_name: exec.name, id: exec.name });
+        }}
+      />
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Team Performance Chart */}
