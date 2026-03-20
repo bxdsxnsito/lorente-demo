@@ -49,11 +49,10 @@ import KpiMetricCard from '@/components/dashboard/KpiMetricCard';
 import ExecutivePerformanceChart from '@/components/dashboard/ExecutivePerformanceChart';
 
 const FALLBACK_EXECUTIVES = [
-  { name: 'Carlos', presupuesto: 50000, ejecucion: 45000 },
+  { name: 'Carlos', presupuesto: 50000, ejecucion: 42000 },
   { name: 'María', presupuesto: 50000, ejecucion: 18000 },
-  { name: 'José', presupuesto: 50000, ejecucion: 41000 },
+  { name: 'José', presupuesto: 50000, ejecucion: 38500 },
   { name: 'Ana', presupuesto: 50000, ejecucion: 12000 },
-  { name: 'Luis', presupuesto: 50000, ejecucion: 29000 },
 ];
 
 export default function Dashboard() {
@@ -154,7 +153,6 @@ export default function Dashboard() {
     return base.map(e => ({
       ...e,
       cumplimiento: e.presupuesto > 0 ? Math.min(Math.round((e.ejecucion / e.presupuesto) * 100), 100) : 0,
-      cumplimientoVisible: e.presupuesto > 0 ? Math.max(Math.min(Math.round((e.ejecucion / e.presupuesto) * 100), 100), 3) : 3,
     }));
   }, [teamPerformanceData]);
 
