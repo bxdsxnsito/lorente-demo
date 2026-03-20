@@ -575,6 +575,15 @@ export default function Dashboard() {
           </div>
         </Card>
       </div>
+      {/* Executive Drilldown Modal */}
+      {selectedExecutive && (
+        <ExecutiveDrilldownModal
+          executive={selectedExecutive}
+          level={1}
+          appUsers={appUsers}
+          onClose={() => setSelectedExecutive(null)}
+        />
+      )}
     </div>
   );
 }
