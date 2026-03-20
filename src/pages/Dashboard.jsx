@@ -13,14 +13,14 @@ import {
   TrendingUp,
   Calendar,
   ArrowUpRight,
-  ArrowDownRight,
-  MoreHorizontal,
   Clock,
   CheckCircle,
-  AlertCircle,
   Phone,
   FileText,
-  Upload
+  Upload,
+  ShieldAlert,
+  Layers,
+  PieChart as PieChartIcon
 } from 'lucide-react';
 import {
   BarChart,
