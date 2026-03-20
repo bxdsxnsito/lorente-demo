@@ -333,8 +333,8 @@ export default function Dashboard() {
 
       {/* KPI Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Avance de Colocaciones - ocupa 2 columnas */}
-        <div className="sm:col-span-2 lg:col-span-2 bg-white rounded-2xl p-5 shadow-sm border-0">
+        {/* Avance de Colocaciones - ocupa toda la fila */}
+        <div className="sm:col-span-2 lg:col-span-4 bg-white rounded-2xl p-5 shadow-sm border-0">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Avance de Colocaciones a Hoy</p>
           <div className="flex justify-between text-sm mb-2">
             <span className="text-blue-600 font-bold text-lg">20% ejecutado</span>
