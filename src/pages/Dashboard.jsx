@@ -250,6 +250,9 @@ export default function Dashboard() {
   };
 
   // ── Drilldown data for selected executive ──
+  const execPerf = selectedExecutive
+    ? officialPerformances.find(p => p.official_id === selectedExecutive.id)
+    : null;
   const execActivities = selectedExecutive
     ? activities.filter(a => a.official_id === selectedExecutive.id || a.official_name === selectedExecutive.full_name)
     : [];
@@ -259,12 +262,9 @@ export default function Dashboard() {
   const execOpps = selectedExecutive
     ? opportunities.filter(o => o.official_id === selectedExecutive.id)
     : [];
-  const execTx = selectedExecutive
-    ? transactions.filter(t => execClients.map(c => c.id).includes(t.client_id))
-    : [];
-  const execEjecucion = execTx.filter(t => t.type === 'deposit' || t.type === 'transfer_in').reduce((s, t) => s + (t.amount || 0), 0);
+  const execEjecucion = execPerf?.colocaciones ?? 0;
   const execBudget = selectedExecutive?.monthly_budget || 50000;
-  const execCumplimiento = execBudget > 0 ? Math.min(Math.round((execEjecucion / execBudget) * 100), 100) : 0;
+  const execCumplimiento = execPerf?.cumplimiento_pct ?? 0;
 
   // ── If viewing a specific executive ──
   if (selectedExecutive) {
