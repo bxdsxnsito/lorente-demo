@@ -114,6 +114,7 @@ export default function Layout({ children, currentPageName }) {
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
     { name: 'Agenda Comercial', icon: Calendar, page: 'Agenda' },
+    { name: 'Ruta del Día', icon: MapPin, page: 'RouteMap' },
     { name: 'Pipeline', icon: Target, page: 'Opportunities' },
     { name: 'Clientes', icon: Users, page: 'Clients' },
     { name: 'Análisis IA', icon: Brain, page: 'AIAnalysis' },
@@ -121,7 +122,6 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Tarjetas', icon: CreditCard, page: 'Cards' },
     { name: 'Productos', icon: Briefcase, page: 'Products' },
     { name: 'Simuladores', icon: Calculator, page: 'ProductSimulator' },
-    { name: 'Ruta del Día', icon: MapPin, page: 'RouteMap' },
   ];
 
   const supervisorMenuItems = [
