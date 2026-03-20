@@ -104,6 +104,13 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Account.list('-created_date', 100),
   });
 
+  const currentPeriod = moment().format('YYYY-MM');
+
+  const { data: officialPerformances = [], refetch: refetchPerformances } = useQuery({
+    queryKey: ['officialPerformances', currentPeriod],
+    queryFn: () => base44.entities.OfficialPerformance.filter({ period: currentPeriod }),
+  });
+
   const isInPeriod = (dateStr, period) => {
     if (!dateStr) return false;
     const date = moment(dateStr);
