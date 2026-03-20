@@ -44,6 +44,9 @@ import StatsCard from '@/components/dashboard/StatsCard';
 import ChartCard from '@/components/dashboard/ChartCard';
 import StatusBadge from '@/components/common/StatusBadge';
 import SalesVsBudgetChart from '@/components/dashboard/SalesVsBudgetChart';
+import KpiMetricCard from '@/components/dashboard/KpiMetricCard';
+import ExecutivePerformanceChart from '@/components/dashboard/ExecutivePerformanceChart';
+import ExecutiveDrilldownModal from '@/components/dashboard/ExecutiveDrilldownModal';
 
 export default function Dashboard() {
   const navigate = useNavigate();
