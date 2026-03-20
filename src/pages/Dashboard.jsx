@@ -331,39 +331,50 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard
-          title="Ventas Totales"
-          value={formatCurrency(totalSales || 382000000)}
-          subtitle={`${transactions.length || 97} transacciones`}
+      {/* KPI Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {/* Avance de Colocaciones - ocupa 2 columnas */}
+        <div className="sm:col-span-2 lg:col-span-2 bg-white rounded-2xl p-5 shadow-sm border-0">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Avance de Colocaciones a Hoy</p>
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-blue-600 font-bold text-lg">20% ejecutado</span>
+            <span className="text-slate-400 font-medium">100% presupuestado</span>
+          </div>
+          <div className="w-full bg-slate-100 rounded-full h-4">
+            <div className="h-4 rounded-full bg-blue-500 transition-all" style={{ width: '20%' }} />
+          </div>
+          <p className="text-xs text-slate-400 mt-2">Mes en curso — datos consolidados del equipo</p>
+        </div>
+
+        <KpiMetricCard
+          title="Colocaciones Mes"
+          value="$200K"
+          subValue="de $1,000K"
+          footer="20% ejecutado"
           icon={DollarSign}
-          iconBgColor="bg-red-100"
-          iconColor="text-red-600"
+          color="blue"
         />
-        <StatsCard
-          title="Vendedores Activos"
-          value={activeVendors}
-          subtitle={`${clients.length || 20} clientes`}
-          icon={Users}
-          iconBgColor="bg-blue-100"
-          iconColor="text-blue-600"
+        <KpiMetricCard
+          title="Captaciones Mes"
+          value="$50K"
+          subValue="de $100K"
+          footer="50% ejecutado"
+          icon={TrendingUp}
+          color="green"
         />
-        <StatsCard
-          title="Citas Totales"
-          value={totalActivities || 73}
-          subtitle={`${completedActivities || 10} completadas`}
-          icon={MapPin}
-          iconBgColor="bg-green-100"
-          iconColor="text-green-600"
+        <KpiMetricCard
+          title="Calidad de Cartera"
+          value="3% mora"
+          subValue="Índice de morosidad"
+          icon={ShieldAlert}
+          color="amber"
         />
-        <StatsCard
-          title="Mejor Vendedor"
-          value="1"
-          subtitle={formatCurrency(bestTeamSales || 191600000)}
-          icon={Target}
-          iconBgColor="bg-purple-100"
-          iconColor="text-purple-600"
+        <KpiMetricCard
+          title="Cruzamiento"
+          value="1.2"
+          subValue="productos x cliente"
+          icon={Layers}
+          color="purple"
         />
       </div>
 
