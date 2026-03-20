@@ -81,7 +81,7 @@ export default function Dashboard() {
   });
   const { data: opportunities = [] } = useQuery({
     queryKey: ['opportunities'],
-    queryFn: () => base44.entities.Opportunity.list('-created_date', 50),
+    queryFn: () => base44.entities.Opportunity.list('-created_date', 100),
   });
   const { data: clients = [] } = useQuery({
     queryKey: ['clients'],
@@ -215,18 +215,18 @@ export default function Dashboard() {
   }, [activities, filters.period]);
 
   const pipelineData = React.useMemo(() => {
-    const periodOpportunities = opportunities.filter(o => isInPeriod(o.created_date, filters.period));
     return [
       { key: 'lead', name: 'Lead', color: '#94a3b8' },
       { key: 'qualified', name: 'Calificado', color: '#0B63FF' },
       { key: 'proposal', name: 'Propuesta', color: '#8b5cf6' },
       { key: 'negotiation', name: 'Negociación', color: '#f59e0b' },
       { key: 'closed_won', name: 'Ganada', color: '#22c55e' },
+      { key: 'closed_lost', name: 'Perdida', color: '#ef4444' },
     ].map(stage => {
-      const stageOpps = periodOpportunities.filter(o => o.stage === stage.key);
+      const stageOpps = opportunities.filter(o => o.stage === stage.key);
       return { name: stage.name, value: stageOpps.length, amount: stageOpps.reduce((s, o) => s + (o.amount || 0), 0), color: stage.color };
-    }).filter(item => item.value > 0);
-  }, [opportunities, filters.period]);
+    });
+  }, [opportunities]);
 
   const todaysActivities = activities.filter(a => moment(a.scheduled_at).isSame(moment(), 'day'));
   const currentAppUser = appUsers.find(u => u.email === user?.email);
