@@ -48,6 +48,8 @@ const formatCurrency = (v) => {
 };
 
 export default function ExecutiveDrilldownModal({ executive, level = 0, appUsers, onClose }) {
+  const [drillExec, setDrillExec] = React.useState(null);
+
   if (!executive) return null;
 
   const data = LEVEL_DATA[Math.min(level, 2)];
@@ -72,8 +74,6 @@ export default function ExecutiveDrilldownModal({ executive, level = 0, appUsers
 
   const pctColoc = Math.round((data.colocaciones.actual / data.colocaciones.meta) * 100);
   const pctCaptac = Math.round((data.captaciones.actual / data.captaciones.meta) * 100);
-
-  const [drillExec, setDrillExec] = React.useState(null);
 
   return (
     <>

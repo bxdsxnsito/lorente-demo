@@ -277,7 +277,7 @@ export default function Dashboard() {
               variant="outline"
               size="sm"
               onClick={() => setSelectedExecutive(null)}
-              className="flex items-center gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+              className="flex items-center gap-2 text-green-700 border-green-200 hover:bg-green-50"
             >
               <ArrowLeft className="h-4 w-4" />
               Volver al Dashboard Global
@@ -301,14 +301,14 @@ export default function Dashboard() {
         {/* Executive identity */}
         <div className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm">
           <Avatar className="h-16 w-16">
-            <AvatarFallback className="bg-blue-100 text-blue-700 text-xl font-bold">
+            <AvatarFallback className="bg-green-100 text-green-700 text-xl font-bold">
               {selectedExecutive.full_name?.slice(0, 2).toUpperCase() || 'EJ'}
             </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-xl font-bold text-slate-800">{selectedExecutive.full_name}</h2>
             <p className="text-sm text-slate-500 capitalize">{selectedExecutive.position || 'Oficial de Negocios'} · {selectedExecutive.branch || 'Sin agencia'}</p>
-            <Badge className="mt-1 bg-blue-100 text-blue-700 border-0">Dashboard Individual</Badge>
+            <Badge className="mt-1 bg-green-100 text-green-700 border-0">Dashboard Individual</Badge>
           </div>
         </div>
 
@@ -324,7 +324,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">AVANCE DE META A HOY</p>
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-blue-600 font-bold text-lg">{execCumplimiento}% ejecutado</span>
+            <span className="text-green-700 font-bold text-lg">{execCumplimiento}% ejecutado</span>
             <span className="text-slate-400 font-medium">Meta: {formatCurrency(execBudget)}</span>
           </div>
           <div className="w-full bg-slate-100 rounded-full h-4">
@@ -412,11 +412,11 @@ export default function Dashboard() {
         <div className="sm:col-span-2 lg:col-span-4 bg-white rounded-2xl p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">AVANCE DE META A HOY</p>
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-blue-600 font-bold text-lg">20% ejecutado</span>
+            <span className="text-green-700 font-bold text-lg">20% ejecutado</span>
             <span className="text-slate-400 font-medium">100% presupuestado</span>
           </div>
           <div className="w-full bg-slate-100 rounded-full h-4">
-            <div className="h-4 rounded-full bg-blue-500 transition-all" style={{ width: '20%' }} />
+            <div className="h-4 rounded-full transition-all" style={{ width: '20%', backgroundColor: '#006838' }} />
           </div>
           <p className="text-xs text-slate-400 mt-2">Mes en curso — datos consolidados del equipo</p>
         </div>

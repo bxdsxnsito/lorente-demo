@@ -1,0 +1,35 @@
+{
+  "name": "AppConfig",
+  "type": "object",
+  "properties": {
+    "appName": {
+      "type": "string",
+      "default": "Banca Digital"
+    },
+    "logoUrl": {
+      "type": "string",
+      "description": "URL of the logo image"
+    },
+    "faviconUrl": {
+      "type": "string",
+      "description": "URL of the favicon"
+    },
+    "primaryColor": {
+      "type": "string",
+      "default": "#0B63FF",
+      "description": "Primary theme color (hex)"
+    },
+    "secondaryColor": {
+      "type": "string",
+      "default": "#0A4DB6",
+      "description": "Secondary theme color (hex)"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "appName"
+  ]
+}

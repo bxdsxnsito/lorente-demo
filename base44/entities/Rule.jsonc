@@ -1,0 +1,43 @@
+{
+  "name": "Rule",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "rule_type": {
+      "type": "string",
+      "enum": [
+        "priority",
+        "preapproval",
+        "assignment",
+        "notification",
+        "validation"
+      ],
+      "default": "priority"
+    },
+    "condition": {
+      "type": "string",
+      "description": "Expresi\u00f3n de condici\u00f3n mock"
+    },
+    "action": {
+      "type": "string",
+      "description": "Acci\u00f3n a ejecutar"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "priority": {
+      "type": "number",
+      "default": 1
+    }
+  },
+  "required": [
+    "name",
+    "rule_type"
+  ]
+}

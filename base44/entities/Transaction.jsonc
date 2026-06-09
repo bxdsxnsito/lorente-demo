@@ -1,0 +1,83 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "description": "ID de la cuenta"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "withdrawal",
+        "transfer_in",
+        "transfer_out",
+        "payment",
+        "charge",
+        "interest"
+      ],
+      "default": "deposit"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "PEN",
+        "EUR"
+      ],
+      "default": "USD"
+    },
+    "reference": {
+      "type": "string",
+      "description": "C\u00f3digo de referencia TRX-XXXXXX"
+    },
+    "description": {
+      "type": "string"
+    },
+    "balance_after": {
+      "type": "number"
+    },
+    "destination_account": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "reversed"
+      ],
+      "default": "completed"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "app",
+        "web",
+        "atm",
+        "branch",
+        "api"
+      ],
+      "default": "app"
+    },
+    "transaction_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha real de la transacci\u00f3n (para simulaciones o importaciones)"
+    }
+  },
+  "required": [
+    "account_id",
+    "type",
+    "amount"
+  ]
+}

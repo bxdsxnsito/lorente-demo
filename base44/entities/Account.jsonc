@@ -1,0 +1,64 @@
+{
+  "name": "Account",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID del cliente propietario"
+    },
+    "account_number": {
+      "type": "string",
+      "description": "N\u00famero de cuenta"
+    },
+    "product_type": {
+      "type": "string",
+      "enum": [
+        "ahorro",
+        "corriente",
+        "plazo_fijo",
+        "cts",
+        "nomina"
+      ],
+      "default": "ahorro"
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "PEN",
+        "EUR"
+      ],
+      "default": "USD"
+    },
+    "balance": {
+      "type": "number",
+      "default": 0
+    },
+    "available_balance": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "blocked",
+        "closed"
+      ],
+      "default": "active"
+    },
+    "opening_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "interest_rate": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "client_id",
+    "account_number",
+    "product_type"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "OfficialPerformance",
+  "type": "object",
+  "properties": {
+    "official_id": {
+      "type": "string",
+      "description": "Referencia al AppUser.id del oficial"
+    },
+    "official_name": {
+      "type": "string",
+      "description": "Nombre completo del oficial (desnormalizado)"
+    },
+    "period": {
+      "type": "string",
+      "description": "Per\u00edodo en formato YYYY-MM (ej: 2026-03)"
+    },
+    "cumplimiento_pct": {
+      "type": "number",
+      "description": "Porcentaje de cumplimiento de meta 0-100"
+    },
+    "colocaciones": {
+      "type": "number",
+      "description": "Monto colocado en el per\u00edodo",
+      "default": 0
+    },
+    "captaciones": {
+      "type": "number",
+      "description": "Monto captado en el per\u00edodo",
+      "default": 0
+    },
+    "mora_pct": {
+      "type": "number",
+      "description": "Porcentaje de mora de su cartera",
+      "default": 0
+    },
+    "cruzamiento": {
+      "type": "number",
+      "description": "Promedio de productos por cliente",
+      "default": 1
+    }
+  },
+  "required": [
+    "official_id",
+    "official_name",
+    "period",
+    "cumplimiento_pct"
+  ]
+}

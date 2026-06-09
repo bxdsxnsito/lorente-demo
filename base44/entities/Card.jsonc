@@ -1,0 +1,65 @@
+{
+  "name": "Card",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "card_number_masked": {
+      "type": "string",
+      "description": "N\u00famero enmascarado ****1234"
+    },
+    "card_type": {
+      "type": "string",
+      "enum": [
+        "debit",
+        "credit",
+        "prepaid"
+      ],
+      "default": "debit"
+    },
+    "brand": {
+      "type": "string",
+      "enum": [
+        "visa",
+        "mastercard",
+        "amex"
+      ],
+      "default": "visa"
+    },
+    "credit_limit": {
+      "type": "number"
+    },
+    "used_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "available_credit": {
+      "type": "number"
+    },
+    "expiry_date": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "blocked",
+        "expired",
+        "cancelled"
+      ],
+      "default": "active"
+    },
+    "last_four": {
+      "type": "string"
+    },
+    "billing_day": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "client_id",
+    "card_number_masked",
+    "card_type"
+  ]
+}

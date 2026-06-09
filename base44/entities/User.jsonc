@@ -1,0 +1,46 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "position": {
+      "type": "string",
+      "enum": [
+        "oficial",
+        "supervisor",
+        "gerente",
+        "admin"
+      ],
+      "default": "oficial"
+    },
+    "department": {
+      "type": "string"
+    },
+    "supervisor_id": {
+      "type": "string"
+    },
+    "branch": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "department",
+    "supervisor_id",
+    "branch",
+    "phone",
+    "avatar_url"
+  ]
+}

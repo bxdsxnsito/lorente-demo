@@ -1,0 +1,77 @@
+{
+  "name": "Loan",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "product_code": {
+      "type": "string",
+      "enum": [
+        "personal",
+        "hipotecario",
+        "vehicular",
+        "consumo",
+        "capital_trabajo"
+      ],
+      "default": "personal"
+    },
+    "principal": {
+      "type": "number",
+      "description": "Monto del pr\u00e9stamo"
+    },
+    "term_months": {
+      "type": "number",
+      "description": "Plazo en meses"
+    },
+    "interest_rate": {
+      "type": "number",
+      "description": "Tasa de inter\u00e9s anual"
+    },
+    "monthly_installment": {
+      "type": "number"
+    },
+    "outstanding_balance": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "preapproved",
+        "in_review",
+        "approved",
+        "disbursed",
+        "rejected",
+        "paid_off",
+        "default"
+      ],
+      "default": "in_review"
+    },
+    "probability": {
+      "type": "number",
+      "description": "Probabilidad de aprobaci\u00f3n 0-100"
+    },
+    "disbursement_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "next_payment_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "payments_made": {
+      "type": "number",
+      "default": 0
+    },
+    "request_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "client_id",
+    "product_code",
+    "principal",
+    "term_months"
+  ]
+}

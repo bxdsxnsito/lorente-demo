@@ -49,7 +49,7 @@ export default function ExecutivePerformanceChart({ executives, onExecutiveClick
   return (
     <Card className="p-6 bg-white border-0 shadow-sm">
       <div className="flex items-center gap-2 mb-1">
-        <TrendingUp className="h-5 w-5 text-[#0B63FF]" />
+        <TrendingUp className="h-5 w-5 text-[#006838]" />
         <h3 className="font-semibold text-slate-700">Desempeño Ejecutivo</h3>
       </div>
       <p className="text-xs text-slate-400 mb-4">Haz clic en un ejecutivo para ver su dashboard</p>

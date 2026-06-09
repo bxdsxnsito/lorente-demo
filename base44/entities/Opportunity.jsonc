@@ -1,0 +1,75 @@
+{
+  "name": "Opportunity",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "official_id": {
+      "type": "string"
+    },
+    "official_name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "product_type": {
+      "type": "string",
+      "enum": [
+        "loan",
+        "card",
+        "insurance",
+        "investment",
+        "account",
+        "other"
+      ],
+      "default": "loan"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "lead",
+        "qualified",
+        "proposal",
+        "negotiation",
+        "closed_won",
+        "closed_lost"
+      ],
+      "default": "lead"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "probability": {
+      "type": "number",
+      "description": "Probabilidad de cierre 0-100"
+    },
+    "expected_close_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "actual_close_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "lost_reason": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_id",
+    "official_id",
+    "title",
+    "product_type"
+  ]
+}

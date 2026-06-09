@@ -1,0 +1,49 @@
+{
+  "name": "Audit",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "login",
+        "logout",
+        "create",
+        "update",
+        "delete",
+        "view",
+        "approve",
+        "reject",
+        "transfer",
+        "checkin"
+      ],
+      "default": "view"
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "entity_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "meta_json": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "trace_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "action"
+  ]
+}

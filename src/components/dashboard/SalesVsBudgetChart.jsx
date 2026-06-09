@@ -132,8 +132,8 @@ export default function SalesVsBudgetChart({
           <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorVentas" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.1}/>
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#006838" stopOpacity={0.15}/>
+                <stop offset="95%" stopColor="#006838" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={true} horizontal={true} />
@@ -165,9 +165,9 @@ export default function SalesVsBudgetChart({
               type="monotone" 
               dataKey="ventas" 
               name="Ventas (Real)"
-              stroke="#22c55e" 
+              stroke="#006838" 
               strokeWidth={3}
-              dot={{ r: 4, fill: '#22c55e', strokeWidth: 2, stroke: '#fff' }}
+              dot={{ r: 4, fill: '#006838', strokeWidth: 2, stroke: '#fff' }}
               activeDot={{ r: 6, strokeWidth: 0 }}
             />
             <Line 

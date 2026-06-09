@@ -1,0 +1,103 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre completo del cliente"
+    },
+    "document": {
+      "type": "string",
+      "description": "N\u00famero de documento de identidad"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "DNI",
+        "RUC",
+        "Pasaporte",
+        "CE"
+      ],
+      "default": "DNI"
+    },
+    "client_type": {
+      "type": "string",
+      "enum": [
+        "com_mayor",
+        "com_mayor_vin",
+        "com_menor",
+        "gd_com",
+        "microcredito",
+        "personal_consumo",
+        "personal_vivienda"
+      ],
+      "description": "Tipo de cliente seg\u00fan clasificaci\u00f3n comercial"
+    },
+    "segment": {
+      "type": "string",
+      "enum": [
+        "corp_agricola",
+        "corp_com_ind_serv",
+        "corp_ganadero",
+        "inv_ifis",
+        "inv_institucional",
+        "inv_personal",
+        "personas_consumo",
+        "pyme_agricola",
+        "pyme_com_ind_serv",
+        "pyme_ganadera",
+        "sin_productos"
+      ],
+      "description": "Segmento del cliente seg\u00fan matriz de segmentaci\u00f3n"
+    },
+    "risk_score": {
+      "type": "number",
+      "description": "Score de riesgo crediticio (0-1000)"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "assigned_official_id": {
+      "type": "string",
+      "description": "ID del oficial de negocios asignado"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "occupation": {
+      "type": "string"
+    },
+    "monthly_income": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "blocked"
+      ],
+      "default": "active"
+    },
+    "lat": {
+      "type": "number",
+      "description": "Latitud de la ubicaci\u00f3n del cliente"
+    },
+    "lng": {
+      "type": "number",
+      "description": "Longitud de la ubicaci\u00f3n del cliente"
+    }
+  },
+  "required": [
+    "name",
+    "document",
+    "document_type"
+  ]
+}

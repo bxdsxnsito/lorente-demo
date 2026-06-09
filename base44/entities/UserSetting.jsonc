@@ -1,0 +1,41 @@
+{
+  "name": "UserSetting",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID del usuario propietario de la configuraci\u00f3n"
+    },
+    "setting_key": {
+      "type": "string",
+      "description": "Clave de la configuraci\u00f3n (ej. theme, notifications)"
+    },
+    "value": {
+      "type": "string",
+      "description": "Valor de la configuraci\u00f3n"
+    },
+    "is_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si la configuraci\u00f3n est\u00e1 activa"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "notifications",
+        "appearance",
+        "security"
+      ],
+      "default": "general"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n amigable para el usuario"
+    }
+  },
+  "required": [
+    "user_id",
+    "setting_key"
+  ]
+}

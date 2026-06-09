@@ -1,0 +1,42 @@
+{
+  "name": "MockEvent",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "transaction",
+        "activity",
+        "opportunity",
+        "loan",
+        "card",
+        "notification",
+        "system"
+      ],
+      "default": "system"
+    },
+    "source": {
+      "type": "string"
+    },
+    "payload": {
+      "type": "string",
+      "description": "JSON payload del evento"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "trace_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_type",
+    "source"
+  ]
+}

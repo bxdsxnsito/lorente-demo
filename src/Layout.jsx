@@ -50,9 +50,9 @@ export default function Layout({ children, currentPageName }) {
   });
 
   const appConfig = configs?.[0] || {
-    appName: 'Bancop',
-    primaryColor: '#1565C0',
-    secondaryColor: '#0D47A1'
+    appName: 'Coop. Lorente',
+    primaryColor: '#006838',
+    secondaryColor: '#004d28'
   };
 
   // Apply Favicon and Title
@@ -147,12 +147,12 @@ export default function Layout({ children, currentPageName }) {
         className={cn(
           "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
           isActive 
-            ? "bg-white/20 text-white font-semibold shadow-lg border-l-4 border-orange-400" 
-            : "text-blue-100 hover:bg-white/10 hover:text-white"
+            ? "bg-white/20 text-white font-semibold shadow-lg border-l-4 border-yellow-400" 
+            : "text-green-100 hover:bg-white/10 hover:text-white"
         )}
         onClick={() => setMobileMenuOpen(false)}
       >
-        <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-orange-300" : "text-blue-200 group-hover:text-white")} />
+        <item.icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-yellow-300" : "text-green-200 group-hover:text-white")} />
         {!collapsed && <span className="truncate">{item.name}</span>}
       </Link>
     );
@@ -238,7 +238,7 @@ export default function Layout({ children, currentPageName }) {
             {!collapsed && (
               <div>
                 <h1 className="text-white font-bold text-lg leading-tight">{appConfig.appName}</h1>
-                <p className="text-blue-200 text-xs">Crece desde la raíz</p>
+                <p className="text-green-200 text-xs">Cooperativa Padre Julián Lorente</p>
               </div>
             )}
           </div>

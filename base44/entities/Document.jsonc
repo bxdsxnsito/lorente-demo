@@ -1,0 +1,54 @@
+{
+  "name": "Document",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "activity_id": {
+      "type": "string"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "dni",
+        "contract",
+        "income_proof",
+        "address_proof",
+        "photo",
+        "signature",
+        "other"
+      ],
+      "default": "other"
+    },
+    "filename": {
+      "type": "string"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "file_size": {
+      "type": "number"
+    },
+    "mime_type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_id",
+    "document_type",
+    "filename"
+  ]
+}

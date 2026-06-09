@@ -1,0 +1,121 @@
+{
+  "name": "Activity",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "official_id": {
+      "type": "string",
+      "description": "ID del oficial asignado"
+    },
+    "official_name": {
+      "type": "string"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "visit",
+        "call",
+        "meeting",
+        "follow_up",
+        "presentation",
+        "document_collection",
+        "onboarding"
+      ],
+      "default": "visit"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "rescheduled"
+      ],
+      "default": "pending"
+    },
+    "result": {
+      "type": "string",
+      "enum": [
+        "successful",
+        "no_contact",
+        "rescheduled",
+        "not_interested",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "related_product": {
+      "type": "string",
+      "enum": [
+        "accounts",
+        "cards",
+        "loans",
+        "insurance",
+        "investments",
+        "other"
+      ],
+      "description": "Producto relacionado al resultado de la actividad"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "lat": {
+      "type": "number"
+    },
+    "lng": {
+      "type": "number"
+    },
+    "checkin_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "checkin_lat": {
+      "type": "number"
+    },
+    "checkin_lng": {
+      "type": "number"
+    },
+    "attached_documents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "route_order": {
+      "type": "number",
+      "description": "Orden de la visita en la ruta del d\u00eda"
+    }
+  },
+  "required": [
+    "client_id",
+    "official_id",
+    "activity_type",
+    "scheduled_at"
+  ]
+}
